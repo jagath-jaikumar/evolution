@@ -21,7 +21,7 @@ env = environ.Env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -44,7 +44,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "drf_yasg",
 ]
+
+INSTALLED_APPS += ["evolution.evolution_core"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -80,9 +84,7 @@ WSGI_APPLICATION = "evolution.evolution_game.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config()
-}
+DATABASES = {"default": dj_database_url.config()}
 
 
 # Password validation
@@ -127,4 +129,4 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-print("Database: ", DATABASES['default'])
+print("Database: ", DATABASES["default"])
