@@ -1,0 +1,3 @@
+# /bin/python3
+
+python -m evolution.manage "$@"

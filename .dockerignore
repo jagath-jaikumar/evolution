@@ -1,0 +1,23 @@
+# Ignore build artifacts
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environments
+venv/
+.venv/
+env/
+
+# Ignore test results
+.pytest_cache/
+.coverage
+*.egg-info/
+
+# Ignore Git data
+.git/
+.gitignore
+
+# Ignore IDE-specific files
+.vscode/
+
+.github
