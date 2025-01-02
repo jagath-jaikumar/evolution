@@ -84,16 +84,6 @@ class GameSetupViewSet(viewsets.ViewSet):
 
     @action(
         detail=False,
-        methods=["get"],
-        url_path="game",
-    )
-    def game(self, request):
-        game_id = request.data.get("game_id")
-        game = Game.objects.get(id=game_id)
-        return Response({"detail": str(game)})
-
-    @action(
-        detail=False,
         methods=["post"],
         url_path="start",
     )
@@ -127,6 +117,41 @@ class GameSetupViewSet(viewsets.ViewSet):
 class GameObservationViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="game",
+    )
+    def game(self, request):
+        game_id = request.data.get("game_id")
+        game = Game.objects.get(id=game_id)
+        return Response({"detail": str(game)})
+
+
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="player",
+    )
+    def player(self, request):
+        game_id = request.data.get("game_id")
+        game = Game.objects.get(id=game_id)
+        player_id = request.data.get("player_id")
+        player = Player.objects.get(id=player_id, in_game=game)
+        return Response({"detail": str(player)})
+
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="user_to_player",
+    )
+    def user_to_player(self, request):
+        username = request.data.get("username")
+        game_id = request.data.get("game_id")
+        game = Game.objects.get(id=game_id)
+        user = User.objects.get(username=username)
+        player = Player.objects.get(user=user, in_game=game)
+        return Response({"detail": str(player)})
 
 # Routers
 router = routers.DefaultRouter()

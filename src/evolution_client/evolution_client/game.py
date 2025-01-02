@@ -3,7 +3,7 @@ from evolution_client import _request_api
 
 def new_game(user_id: int):
     response = _request_api(
-        "/api/setup/new/",
+        "/api/games/new/",
         "post",
         {"user_id": user_id},
     )
@@ -12,7 +12,7 @@ def new_game(user_id: int):
 
 def join_game(game_id: str, user_id: str):
     response = _request_api(
-        "/api/setup/join/",
+        "/api/games/join/",
         "post",
         {"game_id": game_id, "user_id": user_id},
     )
@@ -21,16 +21,15 @@ def join_game(game_id: str, user_id: str):
 
 def get_game(game_id: str):
     response = _request_api(
-        "/api/setup/game/",
-        "get",
-        {"game_id": game_id},
+        f"/api/games/{game_id}/",
+        "get"
     )
     return response
 
 
 def start_game(game_id: str):
     response = _request_api(
-        "/api/setup/start/",
+        "/api/games/start/",
         "post",
         {"game_id": game_id},
     )
