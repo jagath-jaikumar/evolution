@@ -5,18 +5,28 @@ from django.db import models
 
 
 class Player(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
     hand = models.JSONField(default=list)
     in_game = models.ForeignKey("Game", on_delete=models.CASCADE)
+    animals = models.ManyToManyField("Animal", related_name="players")
+    animal_order = models.JSONField(default=list)
 
     def __str__(self):
         return self.user.username
 
 
 class Game(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     epoch = models.IntegerField(default=1)  # Current Epoch (1-6)
     max_epochs = models.IntegerField(default=6)
@@ -26,7 +36,11 @@ class Game(models.Model):
     waiting_areas = models.ManyToManyField("Area", related_name="waiting_games")
     trait_deck = models.JSONField(default=list, null=True)
     started = models.BooleanField(default=False)
-    current_epoch = models.ForeignKey("Epoch", on_delete=models.CASCADE, null=True)
+    current_epoch = models.ForeignKey(
+        "Epoch",
+        on_delete=models.CASCADE,
+        null=True,
+    )
 
     def __str__(self):
         return f"Game {self.id} - Epoch {self.epoch} - Started: {self.started} - Players: {self.players.count()}"
@@ -34,7 +48,11 @@ class Game(models.Model):
 
 class Area(models.Model):
     name = models.CharField(max_length=100)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="areas")
+    game = models.ForeignKey(
+        Game,
+        on_delete=models.CASCADE,
+        related_name="areas",
+    )
     current_tokens_food = models.IntegerField(default=0)
     current_tokens_shelter = models.IntegerField(default=0)
 
@@ -43,7 +61,11 @@ class Area(models.Model):
 
 
 class Animal(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     food_requirement = models.IntegerField(default=1)
@@ -54,18 +76,33 @@ class Animal(models.Model):
     is_alive = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"Animal {self.id} - Player: {self.player.user.username}, Food: {self.food_tokens}/{self.food_requirement}"
+        return (
+            f"Animal {self.id} - Player: {self.player.user.username}, Food: {self.food_tokens}/{self.food_requirement}"
+        )
 
 
 class Action(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    animal = models.ForeignKey(Animal, null=True, blank=True, on_delete=models.SET_NULL)
+    animal = models.ForeignKey(
+        Animal,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
 class Epoch(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
     previous_epoch = models.ForeignKey("Epoch", on_delete=models.CASCADE)
     first_player = models.ForeignKey(Player, on_delete=models.CASCADE)

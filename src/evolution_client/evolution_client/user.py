@@ -5,11 +5,19 @@ def register_user(username: str, password: str, email: str):
     response = _request_api(
         "/register/",
         "post",
-        {"username": username, "password": password, "email": email},
+        {
+            "username": username,
+            "password": password,
+            "email": email,
+        },
     )
     return response
 
 
 def get_user_id_from_username(username: str):
-    response = _request_api("/get_user_id/", "get", {"username": username})
+    response = _request_api(
+        "/get_user_id/",
+        "get",
+        {"username": username},
+    )
     return response

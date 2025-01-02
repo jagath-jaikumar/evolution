@@ -4,7 +4,10 @@ from django.contrib.auth.models import User
 from django.db import connections
 from django.http import HttpResponse, JsonResponse
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+)
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
@@ -22,7 +25,10 @@ def readiness_check(request):
         try:
             connection.cursor()
         except Exception as e:
-            return HttpResponse(f"Database connection failed: {e}", status=500)
+            return HttpResponse(
+                f"Database connection failed: {e}",
+                status=500,
+            )
     return HttpResponse("OK")
 
 
@@ -41,12 +47,20 @@ def register_user(request):
 
     if User.objects.filter(username=username).exists():
         return Response(
-            {"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "Username already exists."},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
-    user = User.objects.create_user(username=username, password=password, email=email)
+    user = User.objects.create_user(
+        username=username,
+        password=password,
+        email=email,
+    )
     return Response(
-        {"message": "User created successfully.", "user_id": user.id},
+        {
+            "message": "User created successfully.",
+            "user_id": user.id,
+        },
         status=status.HTTP_201_CREATED,
     )
 
@@ -56,4 +70,7 @@ def register_user(request):
 def get_user_id_from_username(request):
     username = request.data.get("username")
     user = User.objects.get(username=username)
-    return Response({"user_id": user.id}, status=status.HTTP_200_OK)
+    return Response(
+        {"user_id": user.id},
+        status=status.HTTP_200_OK,
+    )

@@ -11,7 +11,11 @@ HEADERS = {"Authorization": f"Token {AUTH_TOKEN}"}
 def _request_api(path: str, method: str, data: dict = None):
     try:
         response = requests.request(
-            method, f"{BASE_URL}/{path}", json=data, timeout=TIMEOUT, headers=HEADERS
+            method,
+            f"{BASE_URL}/{path}",
+            json=data,
+            timeout=TIMEOUT,
+            headers=HEADERS,
         )
         return response.json()
     except requests.exceptions.Timeout:

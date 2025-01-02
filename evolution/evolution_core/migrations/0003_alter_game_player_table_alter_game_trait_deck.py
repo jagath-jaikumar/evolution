@@ -5,7 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("evolution_core", "0002_alter_game_current_epoch"),
+        (
+            "evolution_core",
+            "0002_alter_game_current_epoch",
+        ),
     ]
 
     operations = [

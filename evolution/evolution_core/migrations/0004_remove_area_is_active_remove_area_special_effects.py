@@ -5,7 +5,10 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("evolution_core", "0003_alter_game_player_table_alter_game_trait_deck"),
+        (
+            "evolution_core",
+            "0003_alter_game_player_table_alter_game_trait_deck",
+        ),
     ]
 
     operations = [

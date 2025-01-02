@@ -27,11 +27,26 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("name", models.CharField(max_length=100)),
-                ("current_tokens_food", models.IntegerField(default=0)),
-                ("current_tokens_shelter", models.IntegerField(default=0)),
-                ("is_active", models.BooleanField(default=True)),
-                ("special_effects", models.JSONField(default=dict)),
+                (
+                    "name",
+                    models.CharField(max_length=100),
+                ),
+                (
+                    "current_tokens_food",
+                    models.IntegerField(default=0),
+                ),
+                (
+                    "current_tokens_shelter",
+                    models.IntegerField(default=0),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(default=True),
+                ),
+                (
+                    "special_effects",
+                    models.JSONField(default=dict),
+                ),
             ],
         ),
         migrations.CreateModel(
@@ -67,16 +82,35 @@ class Migration(migrations.Migration):
                         serialize=False,
                     ),
                 ),
-                ("created_at", models.DateTimeField(auto_now_add=True)),
-                ("epoch", models.IntegerField(default=1)),
-                ("max_epochs", models.IntegerField(default=6)),
-                ("player_table", models.JSONField(default=list)),
-                ("trait_deck", models.JSONField(default=list)),
-                ("started", models.BooleanField(default=False)),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True),
+                ),
+                (
+                    "epoch",
+                    models.IntegerField(default=1),
+                ),
+                (
+                    "max_epochs",
+                    models.IntegerField(default=6),
+                ),
+                (
+                    "player_table",
+                    models.JSONField(default=list),
+                ),
+                (
+                    "trait_deck",
+                    models.JSONField(default=list),
+                ),
+                (
+                    "started",
+                    models.BooleanField(default=False),
+                ),
                 (
                     "active_areas",
                     models.ManyToManyField(
-                        related_name="active_games", to="evolution_core.area"
+                        related_name="active_games",
+                        to="evolution_core.area",
                     ),
                 ),
                 (
@@ -89,7 +123,8 @@ class Migration(migrations.Migration):
                 (
                     "waiting_areas",
                     models.ManyToManyField(
-                        related_name="waiting_games", to="evolution_core.area"
+                        related_name="waiting_games",
+                        to="evolution_core.area",
                     ),
                 ),
             ],
@@ -115,8 +150,14 @@ class Migration(migrations.Migration):
                         serialize=False,
                     ),
                 ),
-                ("score", models.IntegerField(default=0)),
-                ("hand", models.JSONField(default=list)),
+                (
+                    "score",
+                    models.IntegerField(default=0),
+                ),
+                (
+                    "hand",
+                    models.JSONField(default=list),
+                ),
                 (
                     "in_game",
                     models.ForeignKey(
@@ -142,7 +183,8 @@ class Migration(migrations.Migration):
             model_name="epoch",
             name="first_player",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="evolution_core.player"
+                on_delete=django.db.models.deletion.CASCADE,
+                to="evolution_core.player",
             ),
         ),
         migrations.CreateModel(
@@ -157,12 +199,30 @@ class Migration(migrations.Migration):
                         serialize=False,
                     ),
                 ),
-                ("food_requirement", models.IntegerField(default=1)),
-                ("food_tokens", models.IntegerField(default=0)),
-                ("fat_tokens", models.IntegerField(default=0)),
-                ("shelter", models.BooleanField(default=False)),
-                ("traits", models.JSONField(default=list)),
-                ("is_alive", models.BooleanField(default=True)),
+                (
+                    "food_requirement",
+                    models.IntegerField(default=1),
+                ),
+                (
+                    "food_tokens",
+                    models.IntegerField(default=0),
+                ),
+                (
+                    "fat_tokens",
+                    models.IntegerField(default=0),
+                ),
+                (
+                    "shelter",
+                    models.BooleanField(default=False),
+                ),
+                (
+                    "traits",
+                    models.JSONField(default=list),
+                ),
+                (
+                    "is_alive",
+                    models.BooleanField(default=True),
+                ),
                 (
                     "game",
                     models.ForeignKey(
@@ -191,7 +251,10 @@ class Migration(migrations.Migration):
                         serialize=False,
                     ),
                 ),
-                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                (
+                    "timestamp",
+                    models.DateTimeField(auto_now_add=True),
+                ),
                 (
                     "animal",
                     models.ForeignKey(

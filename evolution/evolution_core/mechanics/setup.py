@@ -1,8 +1,13 @@
 import copy
 import random
 
-from evolution.evolution_core.cards.areas import AREA_DECK, Area
-from evolution.evolution_core.models import Area as AreaModel
+from evolution.evolution_core.cards.areas import (
+    AREA_DECK,
+    Area,
+)
+from evolution.evolution_core.models import (
+    Area as AreaModel,
+)
 from evolution.evolution_core.models import Game
 
 

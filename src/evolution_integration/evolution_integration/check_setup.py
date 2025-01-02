@@ -8,7 +8,11 @@ if __name__ == "__main__":
     # generate 3 new users and save their ids
     user_ids = []
     for _ in range(3):
-        response = user.register_user(fake.user_name(), fake.email(), fake.password())
+        response = user.register_user(
+            fake.user_name(),
+            fake.email(),
+            fake.password(),
+        )
         user_ids.append(response["user_id"])
 
     # start a new game from the first user

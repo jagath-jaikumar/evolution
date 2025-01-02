@@ -20,7 +20,9 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from evolution.evolution_core.views import router as core_router
+from evolution.evolution_core.views import (
+    router as core_router,
+)
 from evolution.evolution_game.views import (
     get_user_id_from_username,
     liveness_check,
@@ -50,7 +52,18 @@ urlpatterns = [
         schema_view.with_ui("swagger", cache_timeout=0),
         name="schema-swagger-ui",
     ),
-    path("accounts/", include("django.contrib.auth.urls")),
-    path("register/", register_user, name="register_user"),
-    path("get_user_id/", get_user_id_from_username, name="get_user_id_from_username"),
+    path(
+        "accounts/",
+        include("django.contrib.auth.urls"),
+    ),
+    path(
+        "register/",
+        register_user,
+        name="register_user",
+    ),
+    path(
+        "get_user_id/",
+        get_user_id_from_username,
+        name="get_user_id_from_username",
+    ),
 ]

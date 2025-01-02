@@ -32,3 +32,6 @@ evolution-integration = { path = "src/evolution_integration", develop = true }
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
