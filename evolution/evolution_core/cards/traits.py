@@ -31,6 +31,30 @@ class Trait:
     def __eq__(self, other):
         return self.name == other.name
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "is_bonus_action": self.is_bonus_action,
+            "trait_classes": [tc.value for tc in self.trait_classes],
+            "is_dlc": self.is_dlc,
+            "food_requirement": self.food_requirement,
+            "is_paired": self.is_paired
+        }
+
+    @classmethod
+    def from_json(cls, json_data):
+        trait_classes = [TraitClass(tc) for tc in json_data.get("trait_classes", [])]
+        return cls(
+            name=json_data["name"],
+            description=json_data.get("description"),
+            is_bonus_action=json_data.get("is_bonus_action", False),
+            trait_classes=trait_classes,
+            is_dlc=json_data.get("is_dlc", False),
+            food_requirement=json_data.get("food_requirement", 0),
+            is_paired=json_data.get("is_paired", False)
+        )
+
 
 class NoTraits(Trait):
     def __init__(self):
@@ -465,6 +489,25 @@ class TraitCard:
         # Two cards are equal if they have the same traits in the same order
         return self.traits == other.traits
 
+    def to_json(self):
+        return {
+            "traits": [trait.to_json() for trait in self.traits]
+        }
+    
+    @classmethod
+    def from_json(cls, json_data):
+        # Create trait instances based on trait names
+        traits = []
+        for trait_name in json_data["traits"]:
+            # Find the trait class with matching name
+            trait_class = next(
+                (c for c in Trait.__subclasses__() if c().name == trait_name),
+                None
+            )
+            if trait_class:
+                traits.append(trait_class())
+        return cls(traits=traits)
+
 
 TRAIT_DECK = [
     TraitCard([Simplification(), Carnivorous()]),
@@ -488,7 +531,7 @@ TRAIT_DECK = [
     TraitCard([Anglerfish()]),
     TraitCard([Stasis(), Carnivorous()]),
     TraitCard([Intellect(), HighBodyWeight()]),
-    TraitCard([TailLoss(), Carnivorous]),
+    TraitCard([TailLoss(), Carnivorous()]),
     TraitCard([Anglerfish()]),
     TraitCard([Xylophagous(), FatTissue()]),
     TraitCard([Flight(), FatTissue()]),

@@ -124,23 +124,15 @@ class GameSetupViewSet(viewsets.ViewSet):
         return Response({"detail": "Game started."})
 
 
-class GamePlayViewSet(viewsets.ViewSet):
-    ...
-
-    # @action(detail=False, methods=["post"], url_path="play")
-    # def play(self, request):
-    #     return Response({"detail": "Game played."})
-
-    # @action(detail=False, methods=["get"], url_path="observe")
-    # def observe(self, request):
-    #     return Response({"detail": "Game played."})
+class GameObservationViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
 
 
 # Routers
 router = routers.DefaultRouter()
 router.register(r"setup", GameSetupViewSet, basename="setup")
 router.register(
-    r"gameplay",
-    GamePlayViewSet,
-    basename="gameplay",
+    r"observe",
+    GameObservationViewSet,
+    basename="observe",
 )

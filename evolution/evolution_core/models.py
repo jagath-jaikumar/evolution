@@ -104,5 +104,5 @@ class Epoch(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
-    previous_epoch = models.ForeignKey("Epoch", on_delete=models.CASCADE)
+    previous_epoch = models.ForeignKey("Epoch", on_delete=models.CASCADE, null=True)
     first_player = models.ForeignKey(Player, on_delete=models.CASCADE)
