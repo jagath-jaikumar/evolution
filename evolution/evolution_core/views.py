@@ -10,15 +10,22 @@ from evolution.evolution_core.mechanics.setup import setup_game
 
 
 # Serializers
-class PlayerSerializer(serializers.ModelSerializer):
+class HiddenPlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ["id", "animals", "animal_order"]
         depth = 1
 
 
+class PlayerHandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ["id", "hand", "animals", "animal_order"]
+        depth = 1
+
+
 class GameSerializer(serializers.ModelSerializer):
-    players = PlayerSerializer(many=True, read_only=True)
+    players = HiddenPlayerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Game
@@ -31,12 +38,7 @@ class GameSetupViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=["post"], url_path="new")
     def new(self, request):
-        user = get_object_or_404(User, id=request.data.get("user_id"))
-        game = Game.objects.create()
-        player = Player.objects.create(user=user, in_game=game)
-        game.players.add(player)
-        game.save()
-        return Response(GameSerializer(game).data, status=status.HTTP_201_CREATED)
+        return Response(GameSerializer(Game.objects.create()).data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["post"], url_path="join")
     def join(self, request):
@@ -55,7 +57,7 @@ class GameSetupViewSet(viewsets.ViewSet):
 
         game.players.add(player)
         game.save()
-        return Response({"detail": f"Player {player.user.username} joined the game."}, status=status.HTTP_200_OK)
+        return Response(HiddenPlayerSerializer(player).data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=["post"], url_path="start")
     def start(self, request):
@@ -85,14 +87,7 @@ class GameObservationViewSet(viewsets.ViewSet):
     def player(self, request):
         game = get_object_or_404(Game, id=request.query_params.get("game_id"))
         player = get_object_or_404(Player, id=request.query_params.get("player_id"), in_game=game)
-        return Response(PlayerSerializer(player).data, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=["get"], url_path="user_to_player")
-    def user_to_player(self, request):
-        game = get_object_or_404(Game, id=request.query_params.get("game_id"))
-        user = get_object_or_404(User, username=request.query_params.get("username"))
-        player = get_object_or_404(Player, user=user, in_game=game)
-        return Response(PlayerSerializer(player).data, status=status.HTTP_200_OK)
+        return Response(PlayerHandSerializer(player).data, status=status.HTTP_200_OK)
 
 
 # Router
