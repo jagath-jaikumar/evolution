@@ -8,4 +8,3 @@ def get_game(game_id: str):
         {"game_id": game_id},
     )
     return response
-

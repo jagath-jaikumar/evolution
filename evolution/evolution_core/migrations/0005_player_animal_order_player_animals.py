@@ -17,8 +17,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="player",
             name="animals",
-            field=models.ManyToManyField(
-                related_name="players", to="evolution_core.animal"
-            ),
+            field=models.ManyToManyField(related_name="players", to="evolution_core.animal"),
         ),
     ]

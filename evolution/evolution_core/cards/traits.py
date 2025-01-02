@@ -39,7 +39,7 @@ class Trait:
             "trait_classes": [tc.value for tc in self.trait_classes],
             "is_dlc": self.is_dlc,
             "food_requirement": self.food_requirement,
-            "is_paired": self.is_paired
+            "is_paired": self.is_paired,
         }
 
     @classmethod
@@ -52,7 +52,7 @@ class Trait:
             trait_classes=trait_classes,
             is_dlc=json_data.get("is_dlc", False),
             food_requirement=json_data.get("food_requirement", 0),
-            is_paired=json_data.get("is_paired", False)
+            is_paired=json_data.get("is_paired", False),
         )
 
 
@@ -224,7 +224,7 @@ class PackHunting(Trait):
     def __init__(self):
         super().__init__(
             name="Pack Hunting",
-            description=f"If you have more than one Predator when you select a target for this Predator, you may ignore one of the target's traits until the end of the attack.",
+            description="If you have more than one Predator when you select a target for this Predator, you may ignore one of the target's traits until the end of the attack.",
             trait_classes=[TraitClass.predatory],
         )
 
@@ -490,20 +490,15 @@ class TraitCard:
         return self.traits == other.traits
 
     def to_json(self):
-        return {
-            "traits": [trait.to_json() for trait in self.traits]
-        }
-    
+        return {"traits": [trait.to_json() for trait in self.traits]}
+
     @classmethod
     def from_json(cls, json_data):
         # Create trait instances based on trait names
         traits = []
         for trait_name in json_data["traits"]:
             # Find the trait class with matching name
-            trait_class = next(
-                (c for c in Trait.__subclasses__() if c().name == trait_name),
-                None
-            )
+            trait_class = next((c for c in Trait.__subclasses__() if c().name == trait_name), None)
             if trait_class:
                 traits.append(trait_class())
         return cls(traits=traits)

@@ -1,7 +1,6 @@
 import copy
 import random
 from collections import defaultdict
-import time
 
 from evolution.evolution_core.cards.areas import (
     AREA_DECK,
@@ -12,6 +11,7 @@ from evolution.evolution_core.models import (
 )
 from evolution.evolution_core.models import Game, Epoch
 from evolution.evolution_core.cards.traits import TRAIT_DECK, TraitCard
+
 
 def _get_decks():
     area_deck = copy.deepcopy(AREA_DECK)
@@ -33,6 +33,7 @@ def _area_cards_to_models(area_cards: list[Area], game: Game):
         area_models.append(area_model)
     return area_models
 
+
 def _trait_deck_to_json(trait_deck: list[TraitCard]):
     return [trait.to_json() for trait in trait_deck]
 
@@ -45,7 +46,7 @@ def setup_game(game: Game):
 
     # get the shuffled decks
     area_deck, trait_deck = _get_decks()
-    
+
     # draw n_players active area cards to start
     def _draw_area_cards(game: Game, area_deck: list, num_cards: int, area_type: str):
         areas = []
@@ -61,7 +62,7 @@ def setup_game(game: Game):
     # draw n_players active area cards to start
     _draw_area_cards(game, area_deck, game.players.count(), "active")
 
-    # draw 6 areas cards in waiting 
+    # draw 6 areas cards in waiting
     _draw_area_cards(game, area_deck, 6, "waiting")
 
     # TODO:
@@ -71,14 +72,14 @@ def setup_game(game: Game):
     for _ in range(6):
         for player in players:
             player_hands[player.id].append(trait_deck.pop())
-    
+
     for player in players:
         player.hand = _trait_deck_to_json(player_hands[player.id])
         player.save()
 
     # save the rest of the trait deck to the game object
     game.trait_deck = _trait_deck_to_json(trait_deck)
-    
+
     # create the first epoch with a random first player
     first_epoch = Epoch.objects.create(
         game=game,
