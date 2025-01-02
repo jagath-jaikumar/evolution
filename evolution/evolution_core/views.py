@@ -17,11 +17,9 @@ class HiddenPlayerSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-class PlayerHandSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Player
-        fields = ["id", "hand", "animals", "animal_order"]
-        depth = 1
+class PlayerHandSerializer(HiddenPlayerSerializer):
+    class Meta(HiddenPlayerSerializer.Meta):
+        fields = HiddenPlayerSerializer.Meta.fields + ["hand"]
 
 
 class GameSerializer(serializers.ModelSerializer):

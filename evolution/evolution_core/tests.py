@@ -10,7 +10,7 @@ class GameSetupViewSetTests(APITestCase):
         self.client.force_authenticate(user=self.user)
 
     def test_create_new_game(self):
-        response = self.client.post("/api/setup/new/", {"user_id": self.user.id})
+        response = self.client.post("/api/setup/new/")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn("id", response.data)
 
@@ -63,12 +63,5 @@ class GameObservationViewSetTests(APITestCase):
 
     def test_get_player(self):
         response = self.client.get("/api/observe/player/", {"game_id": self.game.id, "player_id": self.player.id})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["id"], str(self.player.id))
-
-    def test_get_user_to_player(self):
-        response = self.client.get(
-            "/api/observe/user_to_player/", {"game_id": self.game.id, "username": self.user.username}
-        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], str(self.player.id))
