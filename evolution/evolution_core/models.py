@@ -36,6 +36,7 @@ class Game(models.Model):
     waiting_areas = models.ManyToManyField("Area", related_name="waiting_games")
     trait_deck = models.JSONField(default=list, null=True)
     started = models.BooleanField(default=False)
+    ended = models.BooleanField(default=False)
     current_epoch = models.ForeignKey(
         "Epoch",
         on_delete=models.CASCADE,

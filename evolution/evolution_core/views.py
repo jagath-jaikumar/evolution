@@ -1,163 +1,98 @@
 from django.contrib.auth.models import User
-from rest_framework import routers, viewsets
+from rest_framework import routers, serializers, viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import (
-    IsAuthenticated,
-)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
-from evolution.evolution_core.mechanics.setup import (
-    setup_game,
-)
-from evolution.evolution_core.models import (
-    Game,
-    Player,
-)
+from evolution.evolution_core.models import Game, Player
+from evolution.evolution_core.mechanics.setup import setup_game
+
+# Serializers
+class PlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ['id', 'animals', 'animal_order']
+        depth = 1
 
 
+class GameSerializer(serializers.ModelSerializer):
+    players = PlayerSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Game
+        fields = ['id', 'created_at', 'epoch', 'players', 'player_table', 'started', 'ended']
+
+
+# ViewSets
 class GameSetupViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
-    @action(
-        detail=False,
-        methods=["post"],
-        url_path="new",
-    )
+    @action(detail=False, methods=['post'], url_path='new')
     def new(self, request):
-        user_id = request.data.get("user_id")
-        user = User.objects.get(id=user_id)
+        user = get_object_or_404(User, id=request.data.get('user_id'))
         game = Game.objects.create()
         player = Player.objects.create(user=user, in_game=game)
         game.players.add(player)
         game.save()
+        return Response(GameSerializer(game).data, status=status.HTTP_201_CREATED)
 
-        return Response(
-            {
-                "detail": "Game created.",
-                "game_id": game.id,
-            }
-        )
-
-    @action(
-        detail=False,
-        methods=["post"],
-        url_path="join",
-    )
+    @action(detail=False, methods=['post'], url_path='join')
     def join(self, request):
-        game_id = request.data.get("game_id")
-        game = Game.objects.get(id=game_id)
-        if game is None:
-            return Response(
-                {"detail": "Game not found."},
-                status=404,
-            )
+        game = get_object_or_404(Game, id=request.data.get('game_id'))
         if game.started:
-            return Response(
-                {"detail": "Game already started."},
-                status=400,
-            )
+            return Response({'detail': 'Game already started.'}, status=status.HTTP_400_BAD_REQUEST)
         if game.players.count() >= 6:
-            return Response(
-                {"detail": "Game already has the maximum number of players."},
-                status=400,
-            )
+            return Response({'detail': 'Game is full.'}, status=status.HTTP_400_BAD_REQUEST)
+        if game.ended:
+            return Response({'detail': 'Game has ended.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user_id = request.data.get("user_id")
-        user = User.objects.get(id=user_id)
-        if user is None:
-            return Response(
-                {"detail": "User not found."},
-                status=404,
-            )
-
-        player, _ = Player.objects.get_or_create(user=user, in_game=game)
-
-        if player in game.players.all():
-            return Response(
-                {"detail": "You are already in this game."},
-                status=400,
-            )
+        user = get_object_or_404(User, id=request.data.get('user_id'))
+        player, created = Player.objects.get_or_create(user=user, in_game=game)
+        if not created:
+            return Response({'detail': 'Player already in game.'}, status=status.HTTP_400_BAD_REQUEST)
 
         game.players.add(player)
         game.save()
-        return Response({"detail": f"Player {player.user.username} joined the game."})
+        return Response({'detail': f'Player {player.user.username} joined the game.'}, status=status.HTTP_200_OK)
 
-    @action(
-        detail=False,
-        methods=["post"],
-        url_path="start",
-    )
+    @action(detail=False, methods=['post'], url_path='start')
     def start(self, request):
-        game_id = request.data.get("game_id")
-        game = Game.objects.get(id=game_id)
-        if game is None:
-            return Response(
-                {"detail": "Game not found."},
-                status=404,
-            )
-
+        game = get_object_or_404(Game, id=request.data.get('game_id'))
         if game.started:
-            return Response(
-                {"detail": "Game already started."},
-                status=400,
-            )
+            return Response({'detail': 'Game already started.'}, status=status.HTTP_400_BAD_REQUEST)
         if game.players.count() < 2:
-            return Response(
-                {"detail": "At least 2 players are required to start the game."},
-                status=400,
-            )
+            return Response({'detail': 'At least 2 players required to start the game.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        game = setup_game(game)
-
+        setup_game(game)
         game.started = True
         game.save()
-        return Response({"detail": "Game started."})
+        return Response({'detail': 'Game started.'}, status=status.HTTP_200_OK)
 
 
 class GameObservationViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
-    @action(
-        detail=False,
-        methods=["get"],
-        url_path="game",
-    )
+    @action(detail=False, methods=['get'], url_path='game')
     def game(self, request):
-        game_id = request.data.get("game_id")
-        game = Game.objects.get(id=game_id)
-        return Response({"detail": str(game)})
+        game = get_object_or_404(Game, id=request.query_params.get('game_id'))
+        return Response(GameSerializer(game).data, status=status.HTTP_200_OK)
 
-
-    @action(
-        detail=False,
-        methods=["get"],
-        url_path="player",
-    )
+    @action(detail=False, methods=['get'], url_path='player')
     def player(self, request):
-        game_id = request.data.get("game_id")
-        game = Game.objects.get(id=game_id)
-        player_id = request.data.get("player_id")
-        player = Player.objects.get(id=player_id, in_game=game)
-        return Response({"detail": str(player)})
+        game = get_object_or_404(Game, id=request.query_params.get('game_id'))
+        player = get_object_or_404(Player, id=request.query_params.get('player_id'), in_game=game)
+        return Response(PlayerSerializer(player).data, status=status.HTTP_200_OK)
 
-    @action(
-        detail=False,
-        methods=["get"],
-        url_path="user_to_player",
-    )
+    @action(detail=False, methods=['get'], url_path='user_to_player')
     def user_to_player(self, request):
-        username = request.data.get("username")
-        game_id = request.data.get("game_id")
-        game = Game.objects.get(id=game_id)
-        user = User.objects.get(username=username)
-        player = Player.objects.get(user=user, in_game=game)
-        return Response({"detail": str(player)})
+        game = get_object_or_404(Game, id=request.query_params.get('game_id'))
+        user = get_object_or_404(User, username=request.query_params.get('username'))
+        player = get_object_or_404(Player, user=user, in_game=game)
+        return Response(PlayerSerializer(player).data, status=status.HTTP_200_OK)
 
-# Routers
+
+# Router
 router = routers.DefaultRouter()
-router.register(r"setup", GameSetupViewSet, basename="setup")
-router.register(
-    r"observe",
-    GameObservationViewSet,
-    basename="observe",
-)
+router.register(r'setup', GameSetupViewSet, basename='setup')
+router.register(r'observe', GameObservationViewSet, basename='observe')

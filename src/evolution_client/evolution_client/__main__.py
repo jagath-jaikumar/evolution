@@ -4,6 +4,7 @@ import typer
 
 import evolution_client.game as game
 import evolution_client.user as user
+import evolution_client.observe as observe
 
 app = typer.Typer()
 
@@ -24,6 +25,7 @@ def register_commands(module):
 # Register commands from game and user modules
 register_commands(game)
 register_commands(user)
+register_commands(observe)
 
 if __name__ == "__main__":
     app()
