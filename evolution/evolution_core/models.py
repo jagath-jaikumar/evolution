@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
+from evolution.evolution_core.mechanics.states import Phase
 
 
 class Player(models.Model):
@@ -29,7 +30,6 @@ class Game(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     epoch = models.IntegerField(default=1)  # Current Epoch (1-6)
-    max_epochs = models.IntegerField(default=6)
     players = models.ManyToManyField(Player)
     player_table = models.JSONField(default=list, null=True)
     active_areas = models.ManyToManyField("Area", related_name="active_games")
@@ -90,13 +90,7 @@ class Action(models.Model):
     )
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    animal = models.ForeignKey(
-        Animal,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-    )
-    timestamp = models.DateTimeField(auto_now_add=True)
+    action_set = models.JSONField(default=list)
 
 
 class Epoch(models.Model):
@@ -106,4 +100,8 @@ class Epoch(models.Model):
         editable=False,
     )
     previous_epoch = models.ForeignKey("Epoch", on_delete=models.CASCADE, null=True)
-    first_player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    first_player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="epochs_as_first_player")
+    current_phase = models.CharField(max_length=100, default=Phase.DEVELOPMENT)
+    current_player = models.ForeignKey(
+        Player, on_delete=models.CASCADE, null=True, related_name="epochs_as_current_player"
+    )

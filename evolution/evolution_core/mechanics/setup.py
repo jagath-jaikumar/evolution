@@ -11,6 +11,7 @@ from evolution.evolution_core.models import (
 )
 from evolution.evolution_core.models import Game, Epoch
 from evolution.evolution_core.cards.traits import TRAIT_DECK, TraitCard
+from evolution.evolution_core.mechanics.states import Phase
 
 
 def _get_decks():
@@ -81,9 +82,12 @@ def setup_game(game: Game):
     game.trait_deck = _trait_deck_to_json(trait_deck)
 
     # create the first epoch with a random first player
+    first_player = random.choice(players)
     first_epoch = Epoch.objects.create(
         game=game,
-        first_player=random.choice(players),
+        first_player=first_player,
+        current_phase=Phase.DEVELOPMENT,
+        current_player=first_player,
     )
     game.current_epoch = first_epoch
     game.save()

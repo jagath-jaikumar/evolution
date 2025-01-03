@@ -18,7 +18,7 @@ class GameSetupViewSetTests(APITestCase):
         game = Game.objects.create()
         response = self.client.post("/api/setup/join/", {"game_id": game.id, "user_id": self.user.id})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("detail", response.data)
+        self.assertIn("id", response.data)
 
     def test_join_game_already_started(self):
         game = Game.objects.create(started=True)
