@@ -17,3 +17,11 @@ def get_player(game_id: str, player_id: str):
         {"game_id": game_id, "player_id": player_id},
     )
     return response
+
+def get_games_for_user(user_id: str):
+    response = _request_api(
+        "/api/observe/games_for_user/",
+        "get",
+        {"user_id": user_id},
+    )
+    return response

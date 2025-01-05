@@ -24,7 +24,7 @@ from evolution.evolution_core.views import (
     router as core_router,
 )
 from evolution.evolution_game.views import (
-    get_user_id_from_username,
+    login_user,
     liveness_check,
     readiness_check,
     register_user,
@@ -61,9 +61,5 @@ urlpatterns = [
         register_user,
         name="register_user",
     ),
-    path(
-        "get_user_id/",
-        get_user_id_from_username,
-        name="get_user_id_from_username",
-    ),
+    path("login/", login_user, name="login"),
 ]

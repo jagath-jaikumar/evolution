@@ -10,6 +10,10 @@ from rest_framework.decorators import (
 )
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from django.contrib.auth import authenticate
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 
 
 def root(request):
@@ -64,13 +68,15 @@ def register_user(request):
         status=status.HTTP_201_CREATED,
     )
 
-
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def get_user_id_from_username(request):
-    username = request.data.get("username")
-    user = User.objects.get(username=username)
-    return Response(
-        {"user_id": user.id},
-        status=status.HTTP_200_OK,
-    )
+@csrf_exempt
+def login_user(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        username = data.get("username")
+        password = data.get("password")
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            return JsonResponse({"user_id": user.id, "username": user.username})
+        else:
+            return JsonResponse({"error": "Invalid credentials"}, status=400)
+    return JsonResponse({"error": "Method not allowed"}, status=405)
