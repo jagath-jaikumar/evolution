@@ -17,7 +17,7 @@ export default async function handler(
 
       // Return the Django response
       res.status(response.status).json(response.data);
-    } catch (error) {
+    } catch (error: any) {
       res
         .status(error.response?.status || 500)
         .json({ error: "Login failed." });
