@@ -6,38 +6,60 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 
 interface JoinGameButtonProps {
   onModalOpen: () => void;
   onModalClose: () => void;
 }
 
-export default function JoinGameButton({ onModalOpen, onModalClose }: JoinGameButtonProps) {
+export default function JoinGameButton({
+  onModalOpen,
+  onModalClose,
+}: JoinGameButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [gameId, setGameId] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const handleClickOpen = () => {
     setOpen(true);
+    setError(null);
     onModalOpen();
   };
 
   const handleClose = () => {
     setOpen(false);
     setGameId("");
+    setError(null);
     onModalClose();
   };
 
   const handleJoinGame = async () => {
-    if (!gameId.trim()) return;
+    if (!gameId.trim()) {
+      setError("Please enter a game ID");
+      return;
+    }
 
     setIsLoading(true);
+    setError(null);
     try {
-      const response = await axios.post("/api/game/join", { game_id: gameId });
-      console.log("Joined game:", response.data);
+      const userId = sessionStorage.getItem("userId");
+      const response = await axios.post("/api/setup/join", {
+        game_id: gameId,
+        user_id: userId,
+      });
       handleClose();
     } catch (error) {
       console.error("Failed to join game:", error);
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data?.message ||
+            "Failed to join game. Please try again.",
+        );
+      } else {
+        setError("An unexpected error occurred");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +96,13 @@ export default function JoinGameButton({ onModalOpen, onModalClose }: JoinGameBu
             variant="outlined"
             value={gameId}
             onChange={(e) => setGameId(e.target.value)}
+            error={!!error}
           />
+          {error && (
+            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+              {error}
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

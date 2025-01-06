@@ -5,16 +5,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const user_id = req.query.user_id;
+  const game_id = req.body.game_id;
 
   try {
-    const response = await axiosInstance.get(
-      `/api/observe/games_for_user/?user_id=${user_id}`,
-    );
+    const response = await axiosInstance.post("/api/setup/new/", {
+      game_id,
+    });
     res.status(response.status).json(response.data);
-  } catch (error) {
+  } catch (error: any) {
     res
       .status(error.response?.status || 500)
-      .json({ error: "Request failed." });
+      .json({ error: "Failed to join game" });
   }
 }

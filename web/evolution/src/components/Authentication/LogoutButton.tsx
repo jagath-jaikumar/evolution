@@ -12,7 +12,6 @@ export default function LogoutButton() {
       sessionStorage.removeItem("userId");
       setUserId(null);
     } catch (error) {
-      console.error("Failed to logout:", error);
     } finally {
       setIsLoading(false);
     }

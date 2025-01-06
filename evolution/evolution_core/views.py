@@ -86,7 +86,7 @@ class GameObservationViewSet(viewsets.ViewSet):
         game = get_object_or_404(Game, id=request.query_params.get("game_id"))
         player = get_object_or_404(Player, id=request.query_params.get("player_id"), in_game=game)
         return Response(PlayerHandSerializer(player).data, status=status.HTTP_200_OK)
-    
+
     @action(detail=False, methods=["get"], url_path="games_for_user")
     def games_for_user(self, request):
         user = get_object_or_404(User, id=request.query_params.get("user_id"))

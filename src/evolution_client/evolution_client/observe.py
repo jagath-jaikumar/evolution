@@ -18,6 +18,7 @@ def get_player(game_id: str, player_id: str):
     )
     return response
 
+
 def get_games_for_user(user_id: str):
     response = _request_api(
         "/api/observe/games_for_user/",

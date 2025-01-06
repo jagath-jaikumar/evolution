@@ -1,5 +1,5 @@
-import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
+import axiosInstance from "../../../utils/axiosInstance";
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,13 +10,10 @@ export default async function handler(
       const { username, password } = req.body;
 
       // Proxy the login request to the Django backend
-      const response = await axios.post(
-        `${process.env.DJANGO_BACKEND_URL}/login/`,
-        {
-          username,
-          password,
-        },
-      );
+      const response = await axiosInstance.post("/login/", {
+        username,
+        password,
+      });
 
       // Return the Django response
       res.status(response.status).json(response.data);

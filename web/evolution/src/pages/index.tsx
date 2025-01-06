@@ -4,8 +4,9 @@ import "../styles/globals.css";
 import { useEffect, useState } from "react";
 import Main from "../components/Layout/Main";
 import UserContext from "../context/UserContext";
-import Game from "../components/Game/Game";
+import GameComponent from "../components/Game/GameComponent";
 import GameContext from "../context/GameContext";
+import { Game } from "../types/Game";
 
 export default function Home() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function Home() {
         <div>
           {userId ? (
             <Main>
-              <Game />
+              <GameComponent />
             </Main>
           ) : (
             <LoginForm />

@@ -3,4 +3,5 @@ export interface Game {
   players: string[];
   epoch: number;
   ended?: boolean;
+  started?: boolean;
 }

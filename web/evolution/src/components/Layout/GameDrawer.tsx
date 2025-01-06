@@ -8,8 +8,11 @@ import ListItemText from "@mui/material/ListItemText";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Game } from "../../types/Game";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import GameContext from "../../context/GameContext";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import IconButton from "@mui/material/IconButton";
+import axios from "axios";
 
 interface GameDrawerProps {
   open: boolean;
@@ -18,9 +21,31 @@ interface GameDrawerProps {
   isLoading: boolean;
 }
 
-export default function GameDrawer({ open, onClose, games, isLoading }: GameDrawerProps) {
+export default function GameDrawer({
+  open,
+  onClose,
+  games,
+  isLoading,
+}: GameDrawerProps) {
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [localGames, setLocalGames] = useState<Game[]>(games);
   const { setGame } = useContext(GameContext);
+
+  const refreshGames = async () => {
+    try {
+      const userId = sessionStorage.getItem("userId");
+      const response = await axios.get(
+        `/api/observe/games_for_user?user_id=${userId}`,
+      );
+      setLocalGames(response.data);
+    } catch (error) {
+      console.error("Failed to fetch games:", error);
+    }
+  };
+
+  useEffect(() => {
+    refreshGames();
+  }, []);
 
   const handleDrawerClose = () => {
     if (!isJoinModalOpen) {
@@ -30,8 +55,24 @@ export default function GameDrawer({ open, onClose, games, isLoading }: GameDraw
 
   const handleGameClick = (game: Game) => {
     setGame(game);
-    console.log(game);
     onClose();
+  };
+
+  const handleCopyClick = (e: React.MouseEvent, gameId: string) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(gameId.toString());
+  };
+
+  const getGameStatus = (game: Game) => {
+    if (game.ended) return "Ended";
+    if (game.started) return "In Progress";
+    return "Waiting to Start";
+  };
+
+  const getBorderColor = (game: Game) => {
+    if (game.ended) return "grey.400";
+    if (game.started) return "success.main";
+    return "warning.main"; // Orange for waiting to start
   };
 
   return (
@@ -46,11 +87,12 @@ export default function GameDrawer({ open, onClose, games, isLoading }: GameDraw
         role="presentation"
         onKeyDown={handleDrawerClose}
       >
-        <Box sx={{ p: 2 }}>
-          <NewGameButton />
-        </Box>
-        <Box sx={{ p: 2 }}>
-          <JoinGameButton onModalOpen={() => setIsJoinModalOpen(true)} onModalClose={() => setIsJoinModalOpen(false)} />
+        <Box sx={{ p: 2, display: "flex", gap: 1 }}>
+          <NewGameButton onGameCreated={refreshGames} />
+          <JoinGameButton
+            onModalOpen={() => setIsJoinModalOpen(true)}
+            onModalClose={() => setIsJoinModalOpen(false)}
+          />
         </Box>
         <Typography variant="h6" sx={{ px: 2, py: 1 }}>
           Games
@@ -66,18 +108,18 @@ export default function GameDrawer({ open, onClose, games, isLoading }: GameDraw
             <ListItem>
               <ListItemText primary="Loading games..." />
             </ListItem>
-          ) : games.length === 0 ? (
+          ) : localGames.length === 0 ? (
             <ListItem>
               <ListItemText primary="No games available" />
             </ListItem>
           ) : (
-            games.map((game) => (
+            [...localGames].reverse().map((game) => (
               <ListItem
                 key={game.id}
                 onClick={() => handleGameClick(game)}
                 sx={{
-                  border: "1px solid",
-                  borderColor: "divider",
+                  border: "2px solid",
+                  borderColor: getBorderColor(game),
                   borderRadius: 1,
                   mb: 1,
                   cursor: "pointer",
@@ -88,9 +130,22 @@ export default function GameDrawer({ open, onClose, games, isLoading }: GameDraw
                 }}
               >
                 <ListItemText
-                  primary={`${game.id}`}
+                  primary={
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Typography component="span">
+                        {game.id.substring(0, 8)}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleCopyClick(e, game.id)}
+                        sx={{ ml: 1 }}
+                      >
+                        <ContentCopyIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  }
                   secondary={
-                    <Box>
+                    <>
                       <Typography variant="body2" component="span">
                         Players: {game.players.length} • Epoch: {game.epoch}
                       </Typography>
@@ -100,9 +155,9 @@ export default function GameDrawer({ open, onClose, games, isLoading }: GameDraw
                         component="span"
                         color="text.secondary"
                       >
-                        {game.ended ?? " Ended"}
+                        Status: {getGameStatus(game)}
                       </Typography>
-                    </Box>
+                    </>
                   }
                 />
               </ListItem>

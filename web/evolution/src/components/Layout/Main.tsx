@@ -1,18 +1,15 @@
-
-import React, { useEffect, useState } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import axios from 'axios';
-import GameDrawer from './GameDrawer';
-import { Game } from '../../types/Game';
-
-
+import React, { useEffect, useState } from "react";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import CssBaseline from "@mui/material/CssBaseline";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import axios from "axios";
+import GameDrawer from "./GameDrawer";
+import { Game } from "../../types/Game";
 
 export default function Main({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -23,12 +20,13 @@ export default function Main({ children }: { children: React.ReactNode }) {
     const fetchGames = async () => {
       setIsLoading(true);
       try {
-        const userId = sessionStorage.getItem('userId');
-        const response = await axios.get(`/api/game/all?user_id=${userId}`);
-        console.log(response.data);
+        const userId = sessionStorage.getItem("userId");
+        const response = await axios.get(
+          `/api/observe/games_for_user?user_id=${userId}`,
+        );
         setGames(response.data);
       } catch (error) {
-        console.error('Failed to fetch games:', error);
+        console.error("Failed to fetch games:", error);
       } finally {
         setIsLoading(false);
       }
@@ -42,7 +40,7 @@ export default function Main({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed">
         <Toolbar>
@@ -60,16 +58,13 @@ export default function Main({ children }: { children: React.ReactNode }) {
           </Typography>
         </Toolbar>
       </AppBar>
-      <GameDrawer 
+      <GameDrawer
         open={drawerOpen}
         onClose={handleDrawerClose}
         games={games}
         isLoading={isLoading}
       />
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 3, mt: 8, width: '100%' }}
-      >
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, width: "100%" }}>
         <Container>{children}</Container>
       </Box>
     </Box>

@@ -15,7 +15,6 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 
-
 def root(request):
     return JsonResponse({"message": f"Evolution Server running {datetime.now()}"})
 
@@ -67,6 +66,7 @@ def register_user(request):
         },
         status=status.HTTP_201_CREATED,
     )
+
 
 @csrf_exempt
 def login_user(request):
