@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import LoginForm from "../components/Authentication/LoginForm";
-import "../styles/globals.css";
 import { useEffect, useState } from "react";
 import Main from "../components/Layout/Main";
 import UserContext from "../context/UserContext";
