@@ -1,20 +1,22 @@
 from evolution.evolution_core.models import Animal
 from evolution.evolution_core.cards.traits import TraitClass
 
+
 def _countPreyTraits(preyTraits):
     numPreyTraits = len(preyTraits)
     if any(trait.__class__.__name__ == "NoTraits" for trait in preyTraits):
-        numPreyTraits-=1
+        numPreyTraits -= 1
     return numPreyTraits
 
+
 def count(predator: Animal, prey: Animal):
-    '''
-    Counts number of protective traits remaining for prey after 
+    """
+    Counts number of protective traits remaining for prey after
     nullifying protective traits using predator's predatory traits
 
-    Distinguish between "hard" protective traits where if predator unable to resolve, 
+    Distinguish between "hard" protective traits where if predator unable to resolve,
     predator cannot attack, vs "soft" protective traits where predator can attack anyway (see below)
-    '''
+    """
     predator_Traits = set(predator.traits)
 
     # Filter traits with "protective" trait class
@@ -26,7 +28,7 @@ def count(predator: Animal, prey: Animal):
         "Nocturnal": "Nocturnal",
         "Swimming": "Swimming",
         "High Body Weight": "High Body Weight",
-        "Sharp Vision": "Camouflage"
+        "Sharp Vision": "Camouflage",
     }
 
     # Apply nullification rules
@@ -35,7 +37,7 @@ def count(predator: Animal, prey: Animal):
             remaining_Traits.remove(preyTrait)
 
     # Hard trait checks
-    for trait in remaining_Traits: 
+    for trait in remaining_Traits:
         if trait.name == "Burrowing" and prey.food_tokens < prey.food_requirement:
             remaining_Traits.remove(trait)
         elif trait.name == "Transparent" and prey.food_tokens > 0:
@@ -45,7 +47,7 @@ def count(predator: Animal, prey: Animal):
         elif trait.name == "Patronage" and _countPreyTraits(prey_Traits) > 1:
             remaining_Traits.remove(trait)
 
-    '''
+    """
 
     HARD TRAITS:
         [x] Nullification rules
@@ -74,20 +76,20 @@ def count(predator: Animal, prey: Animal):
     
     CONSIDER:
     Returning a set of prey traits that have not been resolved, as prey with horned/running/repelling/tail loss/ink cloud require the player being attacked to respond. Repelling/Tail loss/Ink cloud are all OPTIONAL.
-    '''
+    """
     return len(remaining_Traits)
 
-def valid_attack(predator, prey):
 
-    '''
+def valid_attack(predator, prey):
+    """
     - If predator swimming, prey swimming
     - Resolve anglerfish
     - Count attacking traits vs defending traits
         - Intellect/Pack hunting is auto +1/2
             - If sums are equal, choose what trait(s) to ignore
-    - Resolve attack   
+    - Resolve attack
 
     MAYBE:
     Modulate effect for voracious/insectivore
-    '''
+    """
     return False
