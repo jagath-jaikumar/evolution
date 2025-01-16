@@ -18,7 +18,9 @@ export default function NewGameButton({ onGameCreated }: NewGameButtonProps) {
     try {
       // First create the new game and get the ID
       const userId = sessionStorage.getItem("userId");
-      const response = await axios.post("/api/setup/new/");
+      const response = await axios.post("/api/setup/new/", {
+        user_id: userId,
+      });
       const gameId = response.data.id;
 
       // Only attempt to join if we have a valid game ID

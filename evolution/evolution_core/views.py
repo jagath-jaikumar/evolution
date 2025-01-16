@@ -24,10 +24,11 @@ class PlayerHandSerializer(HiddenPlayerSerializer):
 
 class GameSerializer(serializers.ModelSerializer):
     players = HiddenPlayerSerializer(many=True, read_only=True)
+    created_by = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Game
-        fields = ["id", "created_at", "epoch", "players", "player_table", "started", "ended"]
+        fields = ["id", "created_at", "epoch", "players", "player_table", "started", "ended", "created_by"]
 
 
 # ViewSets
@@ -36,7 +37,11 @@ class GameSetupViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=["post"], url_path="new")
     def new(self, request):
-        return Response(GameSerializer(Game.objects.create()).data, status=status.HTTP_201_CREATED)
+        user_id = request.data.get("user_id")
+        print(user_id)
+        user = get_object_or_404(User, id=user_id)
+        game = Game.objects.create(created_by=user)
+        return Response(GameSerializer(game).data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["post"], url_path="join")
     def join(self, request):

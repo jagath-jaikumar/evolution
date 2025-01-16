@@ -29,6 +29,7 @@ class Game(models.Model):
         editable=False,
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     epoch = models.IntegerField(default=1)  # Current Epoch (1-6)
     players = models.ManyToManyField(Player)
     player_table = models.JSONField(default=list, null=True)

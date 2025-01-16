@@ -13,6 +13,7 @@ export default function GameComponent() {
         const response = await fetch(`/api/observe/game?game_id=${game.id}`);
         const data = await response.json();
         setGame(data);
+        console.log(data);
       } catch (error) {
         console.error("Failed to poll game:", error);
       }

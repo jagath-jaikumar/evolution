@@ -20,7 +20,8 @@ export default function LoginForm() {
 
       if (response.ok) {
         const data = await response.json();
-        sessionStorage.setItem("userId", data.user_id); // Adjust based on Django response
+        sessionStorage.setItem("userId", data.user_id);
+        sessionStorage.setItem("username", data.username);
         setUserId(data.user_id);
       } else {
         const errorData = await response.json();

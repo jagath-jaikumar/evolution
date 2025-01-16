@@ -47,6 +47,18 @@ export default function GameDrawer({
     refreshGames();
   }, []);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (open) {
+      interval = setInterval(refreshGames, 3000);
+    }
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [open]);
+
   const handleDrawerClose = () => {
     if (!isJoinModalOpen) {
       onClose();
@@ -91,7 +103,10 @@ export default function GameDrawer({
           <NewGameButton onGameCreated={refreshGames} />
           <JoinGameButton
             onModalOpen={() => setIsJoinModalOpen(true)}
-            onModalClose={() => setIsJoinModalOpen(false)}
+            onModalClose={() => {
+              setIsJoinModalOpen(false);
+              refreshGames();
+            }}
           />
         </Box>
         <Typography variant="h6" sx={{ px: 2, py: 1 }}>
@@ -135,13 +150,15 @@ export default function GameDrawer({
                       <Typography component="span">
                         {game.id.substring(0, 8)}
                       </Typography>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleCopyClick(e, game.id)}
-                        sx={{ ml: 1 }}
-                      >
-                        <ContentCopyIcon fontSize="small" />
-                      </IconButton>
+                      {!game.started && !game.ended && (
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleCopyClick(e, game.id)}
+                          sx={{ ml: 1 }}
+                        >
+                          <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                      )}
                     </Box>
                   }
                   secondary={

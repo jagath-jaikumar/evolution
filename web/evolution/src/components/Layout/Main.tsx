@@ -15,6 +15,14 @@ export default function Main({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [games, setGames] = useState<Game[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState<string>("");
+
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem("username");
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -53,8 +61,11 @@ export default function Main({ children }: { children: React.ReactNode }) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Evolution
+          </Typography>
+          <Typography variant="subtitle1" component="div">
+            {username}
           </Typography>
         </Toolbar>
       </AppBar>
