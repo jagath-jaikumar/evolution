@@ -12,3 +12,15 @@ poetry install
 poetry shell
 ./manage.py runserver
 ```
+
+## Run tests
+
+```bash
+poetry run pytest
+```
+
+```bash
+./manage test
+```
+
+

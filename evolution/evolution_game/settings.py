@@ -88,7 +88,7 @@ WSGI_APPLICATION = "evolution.evolution_game.wsgi.application"
 
 DATABASES = {"default": dj_database_url.config()}
 DATABASES["TEST"] = {
-    "NAME": f"test_postgres",
+    "NAME": "test_postgres",
     "OPTIONS": {
         "DISABLE_SERVER_SIDE_CURSORS": True,  # Helps close dangling connections
     },
