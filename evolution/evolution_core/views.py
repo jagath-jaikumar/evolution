@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets, status
 from rest_framework.decorators import action
@@ -7,6 +9,9 @@ from django.shortcuts import get_object_or_404
 
 from evolution.evolution_core.models import Game, Player
 from evolution.evolution_core.mechanics.setup import setup_game
+
+logger = logging.getLogger(__name__)
+
 
 
 # Serializers
@@ -97,9 +102,25 @@ class GameObservationViewSet(viewsets.ViewSet):
         user = get_object_or_404(User, id=request.query_params.get("user_id"))
         games = Game.objects.filter(players__user=user)
         return Response(GameSerializer(games, many=True).data, status=status.HTTP_200_OK)
+    
+
+class GamePlayViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=["post"], url_path="basic_action")
+    def basic_action(self, request):
+        game = get_object_or_404(Game, id=request.data.get("game_id"))
+        player = get_object_or_404(Player, id=request.data.get("player_id"), in_game=game)
+        action = request.data.get("action")
+
+        logger.info(f"Player {player.id} performed basic action {action} in game {game.id}")
+        
+        return Response({"detail": "Action performed."}, status=status.HTTP_200_OK)
 
 
 # Router
 router = routers.DefaultRouter()
 router.register(r"setup", GameSetupViewSet, basename="setup")
 router.register(r"observe", GameObservationViewSet, basename="observe")
+router.register(r"play", GamePlayViewSet, basename="play")
+
