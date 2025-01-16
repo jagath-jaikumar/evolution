@@ -16,7 +16,7 @@ import json
 
 
 def root(request):
-    return JsonResponse({"message": f"Evolution Server running {datetime.now()}"})
+    return JsonResponse({"message": f"Evolution LUKE Server running {datetime.now()}"})
 
 
 def liveness_check(request):
