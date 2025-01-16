@@ -1,12 +1,69 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import GameContext from "../../context/GameContext";
 import StartGameButton from "./StartGameButton";
 import UserContext from "../../context/UserContext";
+import HandTray from "./components/HandTray";
+import { Box, Typography } from "@mui/material";
+
+interface PreGameProps {
+  game: any;
+  userId: string;
+}
+
+const PreGameComponent: React.FC<PreGameProps> = ({ game, userId }) => {
+  if (game.started || game.created_by !== userId) return null;
+
+  return (
+    <Box>
+      <Typography variant="h4">Game Details</Typography>
+      <Typography>Join Code: {game.id}</Typography>
+      <Typography>Player Count: {game.players.length}</Typography>
+      <Typography>
+        Status: {game.ended ? "Ended" : game.started ? "In Progress" : "Waiting to Start"}
+      </Typography>
+      <StartGameButton gameId={game.id} />
+    </Box>
+  );
+};
+
+interface MainGameProps {
+  game: any;
+}
+
+const MainGameComponent: React.FC<MainGameProps> = ({ game }) => {
+  const [showHandTray, setShowHandTray] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      const { clientY } = event;
+      const windowHeight = window.innerHeight;
+      const threshold = 100; // Distance from the bottom to trigger tray visibility
+
+      if (windowHeight - clientY < threshold) {
+        setShowHandTray(true);
+      } else {
+        setShowHandTray(false);
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
+  return (
+    <Box>
+      <HandTray game={game} visible={showHandTray} />
+    </Box>
+  );
+};
 
 export default function GameComponent() {
   const { game, setGame } = useContext(GameContext);
-  const { userId, setUserId } = useContext(UserContext);
-  
+  const { userId } = useContext(UserContext);
+
   useEffect(() => {
     if (!game) return;
 
@@ -26,29 +83,16 @@ export default function GameComponent() {
   }, [game, setGame]);
 
   if (!game) {
-    return <div>No game selected</div>;
+    return <Typography>No game selected</Typography>;
   }
 
   return (
-    <div>
-      {!game.started && game.created_by === userId && (
-        <div>
-          <StartGameButton gameId={game.id} />
-        </div>
+    <Box>
+      {!game.started ? (
+        <PreGameComponent game={game} userId={userId} />
+      ) : (
+        <MainGameComponent game={game} />
       )}
-      <h2>Game Details</h2>
-      <p>ID: {game.id}</p>
-      <p>Players: {game.players.join(", ")}</p>
-      <p>Epoch: {game.epoch}</p>
-      <p>Created by: {game.created_by}</p>
-      <p>
-        Status:{" "}
-        {game.ended
-          ? "Ended"
-          : game.started
-            ? "In Progress"
-            : "Waiting to Start"}
-      </p>
-    </div>
+    </Box>
   );
 }

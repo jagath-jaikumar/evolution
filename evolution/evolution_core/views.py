@@ -28,7 +28,7 @@ class PlayerHandSerializer(HiddenPlayerSerializer):
 
 
 class GameSerializer(serializers.ModelSerializer):
-    players = HiddenPlayerSerializer(many=True, read_only=True)
+    players = PlayerHandSerializer(many=True, read_only=True)
     created_by = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
