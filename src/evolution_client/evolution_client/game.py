@@ -1,10 +1,11 @@
 from evolution_client import _request_api
 
 
-def new_game():
+def new_game(user_id: str):
     response = _request_api(
         "/api/setup/new/",
         "post",
+        {"user_id": user_id},
     )
     return response
 

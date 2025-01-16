@@ -17,7 +17,7 @@ if __name__ == "__main__":
         user_ids.append(response["user_id"])
 
     # start a new game
-    response = game.new_game()
+    response = game.new_game(user_ids[0])
 
     game_id = response["id"]
 
