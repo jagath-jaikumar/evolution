@@ -1,10 +1,12 @@
 import { useContext, useEffect } from "react";
 import GameContext from "../../context/GameContext";
 import StartGameButton from "./StartGameButton";
+import UserContext from "../../context/UserContext";
 
 export default function GameComponent() {
   const { game, setGame } = useContext(GameContext);
-
+  const { userId, setUserId } = useContext(UserContext);
+  
   useEffect(() => {
     if (!game) return;
 
@@ -13,7 +15,6 @@ export default function GameComponent() {
         const response = await fetch(`/api/observe/game?game_id=${game.id}`);
         const data = await response.json();
         setGame(data);
-        console.log(data);
       } catch (error) {
         console.error("Failed to poll game:", error);
       }
@@ -30,7 +31,7 @@ export default function GameComponent() {
 
   return (
     <div>
-      {!game.started && (
+      {!game.started && game.created_by === userId && (
         <div>
           <StartGameButton gameId={game.id} />
         </div>
@@ -39,6 +40,7 @@ export default function GameComponent() {
       <p>ID: {game.id}</p>
       <p>Players: {game.players.join(", ")}</p>
       <p>Epoch: {game.epoch}</p>
+      <p>Created by: {game.created_by}</p>
       <p>
         Status:{" "}
         {game.ended

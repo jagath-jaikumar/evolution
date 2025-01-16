@@ -1,20 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import axiosInstance from "../../../utils/axiosInstance";
+import { apiHandler } from "../../../utils/apiHandler";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  const user_id = req.query.user_id;
-
-  try {
-    const response = await axiosInstance.get(
-      `/api/observe/games_for_user/?user_id=${user_id}`,
-    );
-    res.status(response.status).json(response.data);
-  } catch (error: any) {
-    res
-      .status(error.response?.status || 500)
-      .json({ error: "Request failed." });
-  }
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { user_id } = req.query;
+  await apiHandler(req, res, {
+    method: "GET",
+    url: "/api/observe/games_for_user/",
+    queryParams: { user_id },
+  });
 }

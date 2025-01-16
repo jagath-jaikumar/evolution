@@ -29,9 +29,16 @@ ruff = "^0.1.1"
 evolution-client = { path = "src/evolution_client", develop = true }
 evolution-integration = { path = "src/evolution_integration", develop = true }
 
+[tool.poetry.group.test.dependencies]
+pytest-django = "^4.9.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 120
+
+[pytest]
+DJANGO_SETTINGS_MODULE = "evolution.evolution_game.settings"
+python_files = ["test_*.py", "*_test.py", "testing/python/*.py"]

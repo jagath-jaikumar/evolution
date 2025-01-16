@@ -4,4 +4,5 @@ export interface Game {
   epoch: number;
   ended?: boolean;
   started?: boolean;
+  created_by?: number;
 }

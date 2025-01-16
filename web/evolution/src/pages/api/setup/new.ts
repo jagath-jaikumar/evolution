@@ -1,22 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import axiosInstance from "../../../utils/axiosInstance";
+import { apiHandler } from "../../../utils/apiHandler";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  const game_id = req.body.game_id;
-  const user_id = req.body.user_id;
-
-  try {
-    const response = await axiosInstance.post("/api/setup/new/", {
-      game_id,
-      user_id,
-    });
-    res.status(response.status).json(response.data);
-  } catch (error: any) {
-    res
-      .status(error.response?.status || 500)
-      .json({ error: "Failed to join game" });
-  }
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { game_id, user_id } = req.body;
+  await apiHandler(req, res, {
+    method: "POST",
+    url: "/api/setup/new/",
+    body: { game_id, user_id },
+  });
 }

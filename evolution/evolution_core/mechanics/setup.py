@@ -11,7 +11,7 @@ from evolution.evolution_core.models import (
 )
 from evolution.evolution_core.models import Game, Epoch
 from evolution.evolution_core.cards.traits import TRAIT_DECK, TraitCard
-from evolution.evolution_core.mechanics.states import Phase
+from evolution.evolution_core.mechanics.phases import Phase
 
 
 def _get_decks():

@@ -9,12 +9,12 @@ import { Game } from "../types/Game";
 
 export default function Home() {
   const router = useRouter();
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
   const [game, setGame] = useState<Game | null>(null);
 
   useEffect(() => {
     if (sessionStorage.getItem("userId")) {
-      setUserId(sessionStorage.getItem("userId"));
+      setUserId(parseInt(sessionStorage.getItem("userId") || "0"));
     }
   }, [router]);
 

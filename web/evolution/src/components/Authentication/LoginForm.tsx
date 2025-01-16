@@ -22,7 +22,7 @@ export default function LoginForm() {
         const data = await response.json();
         sessionStorage.setItem("userId", data.user_id);
         sessionStorage.setItem("username", data.username);
-        setUserId(data.user_id);
+        setUserId(data.user_id as number);
       } else {
         const errorData = await response.json();
         setError(errorData.error || "Login failed.");
