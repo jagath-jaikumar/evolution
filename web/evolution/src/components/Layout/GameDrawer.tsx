@@ -58,7 +58,7 @@ export default function GameDrawer({
     if (open) {
       interval = setInterval(() => {
         refreshGames();
-      }, 5000);
+      }, 2000);
     }
 
     return () => {

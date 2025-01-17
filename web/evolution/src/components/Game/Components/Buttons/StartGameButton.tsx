@@ -34,8 +34,9 @@ export default function StartGameButton({
       );
 
       if (!startResult.success) {
+        console.log(startResult);
         setError(
-          `Failed to start game: ${startResult.data?.detail || startResult.data?.error || ""}`,
+          `Failed to start game: ${startResult.data?.detail || startResult?.error || ""}`,
         );
         setShowAlert(true);
         return;

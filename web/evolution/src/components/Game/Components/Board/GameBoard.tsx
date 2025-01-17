@@ -17,7 +17,7 @@ export default function GameBoard() {
 
       try {
         const result = await callApi<Game>("get", `api/game/${game.id}/`);
-        if (result.success) {
+        if (result.success && result.data) {
           setGame(result.data);
           
           // Start polling if game starts
