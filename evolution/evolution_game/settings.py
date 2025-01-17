@@ -45,12 +45,19 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "rest_framework.authtoken",
     "django_extensions",
-    "drf_yasg",
+    'drf_spectacular',
 ]
 
-INSTALLED_APPS += ["evolution.evolution_core"]
+INSTALLED_APPS += [
+    "evolution.authentication",
+    "evolution.evolution_core",
+]
+
+if DEBUG:
+    INSTALLED_APPS += [
+        "debug_toolbar",
+    ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -60,7 +67,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "evolution.authentication.timing.RequestTimeMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE += [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ]
 
 ROOT_URLCONF = "evolution.evolution_game.urls"
 
@@ -137,11 +150,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
+        "evolution.authentication.auth0.Auth0Authentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 LOGGING = {
@@ -173,5 +187,7 @@ LOGGING = {
         },
     },
 }
+
+EVOLUTION_AUTH0_DOMAIN = env("EVOLUTION_AUTH0_DOMAIN")
 
 print("Database: ", DATABASES["default"])

@@ -1,126 +1,141 @@
-import logging
-
-from django.contrib.auth.models import User
-from rest_framework import routers, serializers, viewsets, status
+from rest_framework import routers, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 
 from evolution.evolution_core.models import Game, Player
 from evolution.evolution_core.mechanics.setup import setup_game
-
-logger = logging.getLogger(__name__)
-
+from evolution.evolution_core.serializers import GameSerializer
 
 
-# Serializers
-class HiddenPlayerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Player
-        fields = ["id", "animals", "animal_order"]
-        depth = 1
-
-
-class PlayerHandSerializer(HiddenPlayerSerializer):
-    class Meta(HiddenPlayerSerializer.Meta):
-        fields = HiddenPlayerSerializer.Meta.fields + ["hand"]
-
-
-class GameSerializer(serializers.ModelSerializer):
-    players = PlayerHandSerializer(many=True, read_only=True)
-    created_by = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = Game
-        fields = ["id", "created_at", "epoch", "players", "player_table", "started", "ended", "created_by"]
-
-
-# ViewSets
-class GameSetupViewSet(viewsets.ViewSet):
+@extend_schema_view(
+    list=extend_schema(
+        description='List games for authenticated user',
+        responses={200: GameSerializer(many=True)}
+    ),
+    create=extend_schema(
+        description='Create a new game',
+        responses={201: GameSerializer}
+    ),
+    retrieve=extend_schema(
+        description='Get details for a specific game',
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
+        ],
+        responses={200: GameSerializer}
+    ),
+    destroy=extend_schema(
+        description='Delete a game',
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
+        ],
+        responses={204: None}
+    )
+)
+class GameViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
+    serializer_class = GameSerializer
 
-    @action(detail=False, methods=["post"], url_path="new")
-    def new(self, request):
-        user_id = request.data.get("user_id")
-        print(user_id)
-        user = get_object_or_404(User, id=user_id)
-        game = Game.objects.create(created_by=user)
-        return Response(GameSerializer(game).data, status=status.HTTP_201_CREATED)
+    def list(self, request):
+        games = Game.objects.filter(players__user=request.user)
+        return Response(GameSerializer(games, many=True, context={'request': request}).data)
 
-    @action(detail=False, methods=["post"], url_path="join")
-    def join(self, request):
-        game = get_object_or_404(Game, id=request.data.get("game_id"))
-        if game.started:
-            return Response({"detail": "Game already started."}, status=status.HTTP_400_BAD_REQUEST)
-        if game.players.count() >= 6:
-            return Response({"detail": "Game is full."}, status=status.HTTP_400_BAD_REQUEST)
-        if game.ended:
-            return Response({"detail": "Game has ended."}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = get_object_or_404(User, id=request.data.get("user_id"))
-        player, created = Player.objects.get_or_create(user=user, in_game=game)
-        if not created:
-            return Response({"detail": "Player already in game."}, status=status.HTTP_400_BAD_REQUEST)
-
+    def create(self, request):
+        active_games = Game.objects.filter(players__user=request.user, ended=False).count()
+        if active_games >= 5:
+            return Response({"error": "Cannot have more than 5 active games"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        game = Game.objects.create(created_by=request.user)
+        player = Player.objects.create(user=request.user, in_game=game)
         game.players.add(player)
         game.save()
-        return Response(HiddenPlayerSerializer(player).data, status=status.HTTP_200_OK)
+        return Response(GameSerializer(game).data, status=status.HTTP_201_CREATED)
 
-    @action(detail=False, methods=["post"], url_path="start")
-    def start(self, request):
-        game = get_object_or_404(Game, id=request.data.get("game_id"))
+    def retrieve(self, request, pk=None):
+        game = get_object_or_404(Game, pk=pk)
+        if not Player.objects.filter(user=request.user, in_game=game).exists():
+            return Response({"error": "Not a player in this game"}, status=status.HTTP_403_FORBIDDEN)
+        return Response(GameSerializer(game, context={'request': request}).data)
+
+    def destroy(self, request, pk=None):
+        game = get_object_or_404(Game, pk=pk)
+        if request.user != game.created_by:
+            return Response({"error": "Only the game creator can delete the game"}, status=status.HTTP_403_FORBIDDEN)
+        game.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @extend_schema(
+        description='Join an existing game',
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
+        ],
+        responses={200: GameSerializer}
+    )
+    @action(detail=True, methods=['post'])
+    def join(self, request, pk=None):
+        game = get_object_or_404(Game, pk=pk)
+        
         if game.started:
-            return Response({"detail": "Game already started."}, status=status.HTTP_400_BAD_REQUEST)
-        if game.players.count() < 2:
-            return Response(
-                {"detail": "At least 2 players required to start the game."}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "Game already started"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if Player.objects.filter(user=request.user, in_game=game).exists():
+            return Response({"error": "Already in game"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        active_games = Game.objects.filter(players__user=request.user, ended=False).count()
+        if active_games >= 5:
+            return Response({"error": "Cannot have more than 5 active games"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        player = Player.objects.create(user=request.user, in_game=game)
+        game.players.add(player)
+        game.save()
+        return Response(GameSerializer(game).data)
 
+    @extend_schema(
+        description='Start a game',
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
+        ],
+        responses={200: GameSerializer}
+    )
+    @action(detail=True, methods=['post'])
+    def start(self, request, pk=None):
+        game = get_object_or_404(Game, pk=pk)
+        
+        if game.started or game.ended:
+            return Response({"error": "Invalid game state"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if game.player_set.count() < 2:
+            return Response({"error": "Need 2+ players"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if request.user != game.created_by:
+            return Response({"error": "Only the game creator can start the game"}, status=status.HTTP_403_FORBIDDEN)
+            
         setup_game(game)
         game.started = True
         game.save()
-        return Response({"detail": "Game started."}, status=status.HTTP_200_OK)
-
-
-class GameObservationViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated]
-
-    @action(detail=False, methods=["get"], url_path="game")
-    def game(self, request):
-        game = get_object_or_404(Game, id=request.query_params.get("game_id"))
-        return Response(GameSerializer(game).data, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=["get"], url_path="player")
-    def player(self, request):
-        game = get_object_or_404(Game, id=request.query_params.get("game_id"))
-        player = get_object_or_404(Player, id=request.query_params.get("player_id"), in_game=game)
-        return Response(PlayerHandSerializer(player).data, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=["get"], url_path="games_for_user")
-    def games_for_user(self, request):
-        user = get_object_or_404(User, id=request.query_params.get("user_id"))
-        games = Game.objects.filter(players__user=user)
-        return Response(GameSerializer(games, many=True).data, status=status.HTTP_200_OK)
-    
-
-class GamePlayViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated]
-
-    @action(detail=False, methods=["post"], url_path="basic_action")
-    def basic_action(self, request):
-        game = get_object_or_404(Game, id=request.data.get("game_id"))
-        player = get_object_or_404(Player, id=request.data.get("player_id"), in_game=game)
-        action = request.data.get("action")
-
-        logger.info(f"Player {player.id} performed basic action {action} in game {game.id}")
         
-        return Response({"detail": "Action performed."}, status=status.HTTP_200_OK)
+        return Response(GameSerializer(game).data)
 
+@extend_schema_view(
+    make_move=extend_schema(
+        description='Make a move in the game',
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
+        ]
+    )
+)
+class PlayViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = GameSerializer
 
-# Router
+    @action(detail=True, methods=['post'])
+    def make_move(self, request, pk=None):
+        # TODO: Implement game move logic
+        return Response({"message": "Move endpoint not yet implemented"}, status=status.HTTP_501_NOT_IMPLEMENTED)
+
 router = routers.DefaultRouter()
-router.register(r"setup", GameSetupViewSet, basename="setup")
-router.register(r"observe", GameObservationViewSet, basename="observe")
-router.register(r"play", GamePlayViewSet, basename="play")
-
+router.register(r'game', GameViewSet, basename='game')
+router.register(r'play', PlayViewSet, basename='play')

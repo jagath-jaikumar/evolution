@@ -16,50 +16,30 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
-from rest_framework import permissions
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from debug_toolbar.toolbar import debug_toolbar_urls
+from evolution.evolution_game.settings import DEBUG
 
-from evolution.evolution_core.views import (
-    router as core_router,
-)
 from evolution.evolution_game.views import (
-    login_user,
     liveness_check,
     readiness_check,
-    register_user,
     root,
 )
-
-schema_view = get_schema_view(
-    openapi.Info(
-        title="Evolution API",
-        default_version="v1",
-        description="Evolution API",
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
+from evolution.evolution_core.views import router as core_router
 
 urlpatterns = [
+    # administration
     path("admin/", admin.site.urls),
     path("probes/liveness/", liveness_check),
     path("probes/readiness/", readiness_check),
+    # app
     path("", root),
     path("api/", include(core_router.urls)),
-    path(
-        "swagger/",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger-ui",
-    ),
-    path(
-        "accounts/",
-        include("django.contrib.auth.urls"),
-    ),
-    path(
-        "register/",
-        register_user,
-        name="register_user",
-    ),
-    path("login/", login_user, name="login"),
+    # swagger
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
+
+if DEBUG:
+    urlpatterns += debug_toolbar_urls()

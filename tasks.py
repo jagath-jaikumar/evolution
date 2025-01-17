@@ -5,7 +5,7 @@ from invoke import task
 def install(c, dev=False):
     command = "poetry install"
     if dev:
-        command += " --with dev --with deploy --with client --with test"
+        command += " --with dev --with deploy --with test"
     c.run(command)
 
 
@@ -17,3 +17,7 @@ def build_local(c):
 @task
 def run_local(c):
     c.run("docker run -p 8000:8000 --env-file .env evolution")
+
+@task
+def generate_openapi(c):
+    c.run("poetry run python -m evolution.manage spectacular --file evolution/openapi.yaml")

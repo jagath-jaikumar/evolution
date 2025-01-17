@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "evolution-client"
+version = "0.1.0"
+description = ""
+authors = ["Jagath Jai Kumar <jagath.jaikumar@gmail.com>"]
+packages = [
+    { include = "evolution", from = "." }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-dotenv = "*"
+requests = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
