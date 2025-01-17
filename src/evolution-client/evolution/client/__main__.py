@@ -1,4 +1,5 @@
 import typer
+
 from evolution.client.game import Game
 
 app = typer.Typer(pretty_exceptions_show_locals=False)

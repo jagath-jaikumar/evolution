@@ -14,18 +14,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
 from django.urls import include, path
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from debug_toolbar.toolbar import debug_toolbar_urls
-from evolution.evolution_game.settings import DEBUG
+from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
+                                   SpectacularSwaggerView)
 
-from evolution.evolution_game.views import (
-    liveness_check,
-    readiness_check,
-    root,
-)
 from evolution.evolution_core.views import router as core_router
+from evolution.evolution_game.settings import DEBUG
+from evolution.evolution_game.views import (liveness_check, readiness_check,
+                                            root)
 
 urlpatterns = [
     # administration

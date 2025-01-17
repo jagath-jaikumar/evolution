@@ -1,5 +1,5 @@
-from evolution.evolution_core.models import Animal
 from evolution.evolution_core.cards.traits import TraitClass
+from evolution.evolution_core.models import Animal
 
 
 def _countPreyTraits(preyTraits):

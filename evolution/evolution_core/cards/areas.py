@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Optional
+
 import evolution.evolution_core.cards.traits as traits
 
 

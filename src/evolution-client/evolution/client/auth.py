@@ -1,7 +1,8 @@
-import requests
 import os
 import time
 from functools import wraps
+
+import requests
 
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
 AUTH0_CLIENT_ID = os.getenv("AUTH0_CLIENT_ID")

@@ -1,12 +1,15 @@
+import logging
+from functools import lru_cache
+
+import requests
+from django.contrib.auth.models import User
+from django.core.cache import cache
 from jose import jwt
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from django.contrib.auth.models import User
-import requests
-from evolution.authentication.constants import AUTH0_DOMAIN, API_IDENTIFIER, ALGORITHMS
-import logging
-from django.core.cache import cache
-from functools import lru_cache
+
+from evolution.authentication.constants import (ALGORITHMS, API_IDENTIFIER,
+                                                AUTH0_DOMAIN)
 
 logger = logging.getLogger(__name__)
 

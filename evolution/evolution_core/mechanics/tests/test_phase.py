@@ -1,4 +1,4 @@
-from evolution.evolution_core.mechanics.phases import Phase, PHASE_CYCLE
+from evolution.evolution_core.mechanics.phases import PHASE_CYCLE, Phase
 
 
 def test_phase_order():

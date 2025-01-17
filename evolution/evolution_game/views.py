@@ -3,6 +3,7 @@ from datetime import datetime
 from django.db import connections
 from django.http import HttpResponse, JsonResponse
 
+
 def root(request):
     return JsonResponse({"message": f"Evolution Server running {datetime.now()}"})
 

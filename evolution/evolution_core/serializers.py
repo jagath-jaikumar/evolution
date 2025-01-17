@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from evolution.evolution_core.models import Player, Game
+
+from evolution.evolution_core.models import Game, Player
+
 
 class PlayerSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email')

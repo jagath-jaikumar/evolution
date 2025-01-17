@@ -1,6 +1,7 @@
-from evolution.client.utils import make_request
-from evolution.client.auth import authenticated
 from typing import Optional
+
+from evolution.client.auth import authenticated
+from evolution.client.utils import make_request
 
 
 class Game:

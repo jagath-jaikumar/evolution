@@ -1,13 +1,14 @@
-from rest_framework import routers, viewsets, status
+from django.shortcuts import get_object_or_404
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (OpenApiParameter, extend_schema,
+                                   extend_schema_view)
+from rest_framework import routers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
-from drf_spectacular.types import OpenApiTypes
 
-from evolution.evolution_core.models import Game, Player
 from evolution.evolution_core.mechanics.setup import setup_game
+from evolution.evolution_core.models import Game, Player
 from evolution.evolution_core.serializers import GameSerializer
 
 
