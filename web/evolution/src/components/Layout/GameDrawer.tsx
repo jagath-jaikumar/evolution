@@ -176,7 +176,7 @@ export default function GameDrawer({
                         <>
                           <Typography variant="body2" component="span">
                             Players: {game.player_count} • Epoch:{" "}
-                            {game.current_epoch || "N/A"}
+                            {game.current_epoch?.epoch_number || "N/A"}
                           </Typography>
                           <br />
                           <Typography
