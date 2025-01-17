@@ -188,6 +188,6 @@ LOGGING = {
     },
 }
 
-EVOLUTION_AUTH0_DOMAIN = env("EVOLUTION_AUTH0_DOMAIN")
+EVOLUTION_AUTH0_DOMAIN = env("EVOLUTION_AUTH0_DOMAIN", default="dev-c4pf4ngumdste5ne.us.auth0.com")
 
 print("Database: ", DATABASES["default"])
