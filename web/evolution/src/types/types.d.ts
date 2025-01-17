@@ -26,7 +26,7 @@ export interface Game {
   started: boolean;
   ended: boolean;
   current_epoch: Epoch | null;
-  this_player: PlayerDetail | null;
+  this_player: PlayerDetail;
   other_players: Player[];
   player_count: number;
 }

@@ -49,6 +49,8 @@ export default function GameBoard() {
     return null;
   }
 
+  console.log(game);
+
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h4" gutterBottom>
@@ -87,7 +89,9 @@ export default function GameBoard() {
             Score: {game.this_player.score}
           </Typography>
           <Typography variant="body1">
-            Cards in Hand: {game.this_player.hand.length}
+            Cards in Hand: {game.this_player.hand.map((card, index) => (
+              <></>
+            ))}
           </Typography>
           <Typography variant="body1">
             Animals: {game.this_player.animals.length}
