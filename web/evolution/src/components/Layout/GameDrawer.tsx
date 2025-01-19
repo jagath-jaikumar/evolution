@@ -29,7 +29,7 @@ export default function GameDrawer({
   isLoading,
 }: GameDrawerProps) {
   const { user } = useUser();
-  const { setGame } = useContext(GameContext);
+  const { game: currentGame, setGame } = useContext(GameContext);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [localGames, setLocalGames] = useState<Game[]>(games);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -40,6 +40,14 @@ export default function GameDrawer({
       const response = await callApi<Game[]>("get", "api/game/");
       if (response.success && response.data) {
         setLocalGames(response.data);
+        
+        // If current game exists, update it with latest data
+        if (currentGame) {
+          const updatedGame = response.data.find(g => g.id === currentGame.id);
+          if (updatedGame) {
+            setGame(updatedGame);
+          }
+        }
       }
     } finally {
       setIsRefreshing(false);
@@ -75,7 +83,15 @@ export default function GameDrawer({
   };
 
   const handleGameClick = (game: Game) => {
-    setGame(game);
+    // If clicking same game, do nothing
+    if (currentGame?.id === game.id) {
+      onClose();
+      return;
+    }
+    
+    // Clear previous game before setting new one
+    setGame(null);
+    setTimeout(() => setGame(game), 0);
     onClose();
   };
 
@@ -91,6 +107,7 @@ export default function GameDrawer({
   };
 
   const getBorderColor = (game: Game) => {
+    if (game.id === currentGame?.id) return "primary.main";
     if (game.ended) return "grey.400";
     if (game.started) return "success.main";
     return "warning.main"; // Orange for waiting to start
