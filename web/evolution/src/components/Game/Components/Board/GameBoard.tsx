@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import GameContext from "@/context/GameContext";
-import { Box, Typography, IconButton, Card, CardContent, CardActions, Dialog, DialogTitle, DialogContent, Chip } from "@mui/material";
+import { Box, Typography, IconButton, Card, CardContent, CardActions, Dialog, DialogTitle, DialogContent, Chip, Button } from "@mui/material";
 import StartGameButton from "@/components/Game/Components/Buttons/StartGameButton";
 import { callApi } from "@/utils/callApi";
 import { Game } from "@/types/types";
@@ -28,9 +28,10 @@ interface CardTrayProps {
   onSwapTraits: (cardIndex: number) => void;
   onPlayCard: (cardIndex: number) => void;
   currentPhase?: Phase;
+  onPass: () => void;
 }
 
-function CardTray({ hand, flippedCards, cardTraits, onTraitClick, onFlipCard, onSwapTraits, onPlayCard, currentPhase }: CardTrayProps) {
+function CardTray({ hand, flippedCards, cardTraits, onTraitClick, onFlipCard, onSwapTraits, onPlayCard, currentPhase, onPass }: CardTrayProps) {
   return (
     <Box sx={{ 
       position: 'fixed', 
@@ -99,6 +100,19 @@ function CardTray({ hand, flippedCards, cardTraits, onTraitClick, onFlipCard, on
           </CardActions>
         </Card>
       ))}
+      <Button
+        variant="contained"
+        color="error"
+        onClick={onPass}
+        sx={{
+          position: 'fixed',
+          right: 24,
+          bottom: 24,
+          minWidth: 100
+        }}
+      >
+        Pass
+      </Button>
     </Box>
   );
 }
@@ -210,6 +224,10 @@ export default function GameBoard() {
     // Implementation for playing card
   };
 
+  const handlePass = () => {
+    // Implementation for passing turn
+  };
+
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h4" gutterBottom>
@@ -278,6 +296,7 @@ export default function GameBoard() {
           onSwapTraits={handleSwapTraits}
           onPlayCard={handlePlayCard}
           currentPhase={game.current_epoch?.current_phase as Phase}
+          onPass={handlePass}
         />
       )}
 
