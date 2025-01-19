@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from evolution.evolution_core.models import Game, Player, Epoch
+from evolution.evolution_core.models import Game, Player, Epoch, Area
 
 class EpochSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,12 +26,19 @@ class PlayerDetailSerializer(serializers.ModelSerializer):
         fields = ['id', 'score', 'hand', 'animals', 'animal_order']
 
 
+class AreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Area
+        fields = ['id', 'name', 'current_tokens_food', 'current_tokens_shelter']
+
+
 class GameSerializer(serializers.ModelSerializer):
     created_by_this_user = serializers.SerializerMethodField()
     this_player = serializers.SerializerMethodField()
     other_players = serializers.SerializerMethodField()
     player_count = serializers.IntegerField(source='players.count', read_only=True)
     current_epoch = EpochSerializer(read_only=True)
+    active_areas = AreaSerializer(many=True, read_only=True)
     
     class Meta:
         model = Game
