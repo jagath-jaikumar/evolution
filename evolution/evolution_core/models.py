@@ -46,6 +46,7 @@ class Game(models.Model):
         null=True,
         db_index=True,
     )
+    last_action = models.ForeignKey("Action", on_delete=models.SET_NULL, null=True, related_name="+", db_index=True)
 
     class Meta:
         indexes = [
@@ -109,8 +110,21 @@ class Action(models.Model):
         db_index=True,
     )
     game = models.ForeignKey(Game, on_delete=models.CASCADE, db_index=True)
+    epoch = models.ForeignKey("Epoch", on_delete=models.CASCADE, related_name="actions", db_index=True)
     player = models.ForeignKey(Player, on_delete=models.CASCADE, db_index=True)
     action_set = models.JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['game', 'epoch', 'created_at']),
+        ]
+        ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.game.last_action = self
+        self.game.save()
 
 
 class Epoch(models.Model):
@@ -127,3 +141,4 @@ class Epoch(models.Model):
     current_player = models.ForeignKey(
         Player, on_delete=models.CASCADE, null=True, related_name="epochs_as_current_player", db_index=True
     )
+

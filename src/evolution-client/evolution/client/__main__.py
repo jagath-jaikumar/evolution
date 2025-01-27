@@ -1,6 +1,7 @@
 import typer
 
 from evolution.client.game import Game
+from evolution.client.auth import login, current_user
 
 app = typer.Typer(pretty_exceptions_show_locals=False)
 
@@ -48,6 +49,13 @@ def make_move(game_id: int):
     """Make a move in the game"""
     result = Game.make_move(game_id)
     typer.echo(f"Move result: {result}")
+
+
+@app.command()
+def say_hi():
+    if current_user is None:
+        login()
+    print(f"Welcome {current_user['name']}!")
 
 if __name__ == "__main__":
     app()
