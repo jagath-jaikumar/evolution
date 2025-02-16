@@ -8,14 +8,14 @@ def install(c, dev=False):
     c.run(command)
 
 @task
-def test_apps(c):
-    c.run("poetry run python -m evolution.manage test", pty=True)
+def test_apps(c, pty=False):
+    c.run("poetry run python -m evolution.manage test", pty=pty)
 
 @task
-def test_libs(c):
-    c.run("poetry run pytest", pty=True)
+def test_libs(c, pty=False):
+    c.run("poetry run pytest", pty=False)
 
 @task
-def test(c):
-    c.run("poetry run pytest", pty=True)
-    c.run("poetry run python -m evolution.manage test", pty=True)
+def test(c, pty=False):
+    c.run("poetry run pytest", pty=pty)
+    c.run("poetry run python -m evolution.manage test", pty=pty)
