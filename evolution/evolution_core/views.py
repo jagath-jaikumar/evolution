@@ -1,7 +1,4 @@
 from django.shortcuts import get_object_or_404
-from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import (OpenApiParameter, extend_schema,
-                                   extend_schema_view)
 from rest_framework import routers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -12,30 +9,6 @@ from evolution.evolution_core.models import Game, Player
 from evolution.evolution_core.serializers import GameSerializer
 
 
-@extend_schema_view(
-    list=extend_schema(
-        description='List games for authenticated user',
-        responses={200: GameSerializer(many=True)}
-    ),
-    create=extend_schema(
-        description='Create a new game',
-        responses={201: GameSerializer}
-    ),
-    retrieve=extend_schema(
-        description='Get details for a specific game',
-        parameters=[
-            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
-        ],
-        responses={200: GameSerializer}
-    ),
-    destroy=extend_schema(
-        description='Delete a game',
-        parameters=[
-            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
-        ],
-        responses={204: None}
-    )
-)
 class GameViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = GameSerializer
@@ -68,13 +41,6 @@ class GameViewSet(viewsets.ViewSet):
         game.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @extend_schema(
-        description='Join an existing game',
-        parameters=[
-            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
-        ],
-        responses={200: GameSerializer}
-    )
     @action(detail=True, methods=['post'])
     def join(self, request, pk=None):
         game = get_object_or_404(Game, pk=pk)
@@ -94,13 +60,6 @@ class GameViewSet(viewsets.ViewSet):
         game.save()
         return Response(GameSerializer(game).data)
 
-    @extend_schema(
-        description='Start a game',
-        parameters=[
-            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
-        ],
-        responses={200: GameSerializer}
-    )
     @action(detail=True, methods=['post'])
     def start(self, request, pk=None):
         game = get_object_or_404(Game, pk=pk)
@@ -120,14 +79,6 @@ class GameViewSet(viewsets.ViewSet):
         
         return Response(GameSerializer(game).data)
 
-@extend_schema_view(
-    make_move=extend_schema(
-        description='Make a move in the game',
-        parameters=[
-            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)
-        ]
-    )
-)
 class PlayViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = GameSerializer

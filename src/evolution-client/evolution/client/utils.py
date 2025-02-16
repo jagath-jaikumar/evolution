@@ -5,13 +5,15 @@ import requests
 import typer
 from rich import print as rprint
 
+from evolution.client.auth import authenticate, AuthenticationError
 
+@authenticate
 def make_request(
-    token: str,
     method: str,
     endpoint: str,
     payload: Optional[Dict[str, Any]] = None,
-    params: Optional[Dict[str, Any]] = None
+    params: Optional[Dict[str, Any]] = None,
+    token: Optional[str] = None
 ) -> requests.Response:
     """
     Makes an HTTP request to the Django backend with authentication.
@@ -26,7 +28,7 @@ def make_request(
     Returns:
         Response from the API
     """
-    base_url = os.getenv("NEXT_PUBLIC_DJANGO_BACKEND_URL")
+    base_url = os.getenv("DJANGO_BACKEND_URL")
     url = f"{base_url}{endpoint}"
     
     headers = {
@@ -42,9 +44,9 @@ def make_request(
         params=params
     )
     
-    if response.status_code >= 400:
-        rprint(f"[red]Error {response.status_code}:[/red] {response.text}")
-        raise typer.Exit(1)
-
+    if response.status_code == 403:
+        raise AuthenticationError("Invalid token")
     
+    response.raise_for_status()
+
     return response

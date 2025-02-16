@@ -93,6 +93,7 @@ class Auth0Authentication(BaseAuthentication):
                     else:
                         user_info = get_user_info(token)
                         email = user_info.get("email")
+                        breakpoint()
                         if not email:
                             raise AuthenticationFailed("Email not found in userinfo")
 
