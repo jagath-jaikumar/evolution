@@ -16,11 +16,11 @@ class GameViewSetTests(TestCase):
     def test_list_games(self):
         # Create some games
         game1 = Game.objects.create(created_by=self.user1)
-        player1 = Player.objects.create(user=self.user1, in_game=game1)
+        player1 = Player.objects.create(user=self.user1, game=game1)
         game1.players.add(player1)
 
         game2 = Game.objects.create(created_by=self.user2)
-        player2 = Player.objects.create(user=self.user1, in_game=game2)
+        player2 = Player.objects.create(user=self.user1, game=game2)
         game2.players.add(player2)
 
         # Get list of games
@@ -37,7 +37,7 @@ class GameViewSetTests(TestCase):
         # Create 5 active games
         for _ in range(5):
             game = Game.objects.create(created_by=self.user1)
-            player = Player.objects.create(user=self.user1, in_game=game)
+            player = Player.objects.create(user=self.user1, game=game)
             game.players.add(player)
 
         # Try to create 6th game
@@ -47,7 +47,7 @@ class GameViewSetTests(TestCase):
 
     def test_retrieve_game(self):
         game = Game.objects.create(created_by=self.user1)
-        player = Player.objects.create(user=self.user1, in_game=game)
+        player = Player.objects.create(user=self.user1, game=game)
         game.players.add(player)
 
         response = self.client.get(f'/api/game/{game.id}/')
@@ -56,7 +56,7 @@ class GameViewSetTests(TestCase):
 
     def test_retrieve_game_not_player(self):
         game = Game.objects.create(created_by=self.user2)
-        player = Player.objects.create(user=self.user2, in_game=game)
+        player = Player.objects.create(user=self.user2, game=game)
         game.players.add(player)
 
         response = self.client.get(f'/api/game/{game.id}/')
@@ -64,7 +64,7 @@ class GameViewSetTests(TestCase):
 
     def test_delete_game(self):
         game = Game.objects.create(created_by=self.user1)
-        player = Player.objects.create(user=self.user1, in_game=game)
+        player = Player.objects.create(user=self.user1, game=game)
         game.players.add(player)
 
         response = self.client.delete(f'/api/game/{game.id}/')
@@ -73,7 +73,7 @@ class GameViewSetTests(TestCase):
 
     def test_delete_game_not_creator(self):
         game = Game.objects.create(created_by=self.user2)
-        player = Player.objects.create(user=self.user1, in_game=game)
+        player = Player.objects.create(user=self.user1, game=game)
         game.players.add(player)
 
         response = self.client.delete(f'/api/game/{game.id}/')
@@ -82,16 +82,16 @@ class GameViewSetTests(TestCase):
 
     def test_join_game(self):
         game = Game.objects.create(created_by=self.user2)
-        player = Player.objects.create(user=self.user2, in_game=game)
+        player = Player.objects.create(user=self.user2, game=game)
         game.players.add(player)
 
         response = self.client.post(f'/api/game/{game.id}/join/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(Player.objects.filter(user=self.user1, in_game=game).exists())
+        self.assertTrue(Player.objects.filter(user=self.user1, game=game).exists())
 
     def test_join_started_game(self):
-        game = Game.objects.create(created_by=self.user2, started=True)
-        player = Player.objects.create(user=self.user2, in_game=game)
+        game = Game.objects.create(created_by=self.user2, game_started=True)
+        player = Player.objects.create(user=self.user2, game=game)
         game.players.add(player)
 
         response = self.client.post(f'/api/game/{game.id}/join/')
@@ -100,18 +100,18 @@ class GameViewSetTests(TestCase):
 
     def test_start_game(self):
         game = Game.objects.create(created_by=self.user1)
-        player1 = Player.objects.create(user=self.user1, in_game=game)
-        player2 = Player.objects.create(user=self.user2, in_game=game)
+        player1 = Player.objects.create(user=self.user1, game=game)
+        player2 = Player.objects.create(user=self.user2, game=game)
         game.players.add(player1, player2)
 
         response = self.client.post(f'/api/game/{game.id}/start/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         game.refresh_from_db()
-        self.assertTrue(game.started)
+        self.assertTrue(game.game_started)
 
     def test_start_game_not_enough_players(self):
         game = Game.objects.create(created_by=self.user1)
-        player = Player.objects.create(user=self.user1, in_game=game)
+        player = Player.objects.create(user=self.user1, game=game)
         game.players.add(player)
 
         response = self.client.post(f'/api/game/{game.id}/start/')

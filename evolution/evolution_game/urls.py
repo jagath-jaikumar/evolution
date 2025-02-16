@@ -17,8 +17,6 @@ Including another URLconf
 from debug_toolbar.toolbar import debug_toolbar_urls
 from django.contrib import admin
 from django.urls import include, path
-from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
-                                   SpectacularSwaggerView)
 
 from evolution.evolution_core.views import router as core_router
 from evolution.evolution_game.settings import DEBUG
@@ -33,10 +31,6 @@ urlpatterns = [
     # app
     path("", root),
     path("api/", include(core_router.urls)),
-    # swagger
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
 if DEBUG:

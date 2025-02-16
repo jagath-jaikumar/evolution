@@ -18,19 +18,19 @@ class GameViewSet(viewsets.ViewSet):
         return Response(GameSerializer(games, many=True, context={'request': request}).data)
 
     def create(self, request):
-        active_games = Game.objects.filter(players__user=request.user, ended=False).count()
+        active_games = Game.objects.filter(players__user=request.user, game_ended=False).count()
         if active_games >= 5:
             return Response({"error": "Cannot have more than 5 active games"}, status=status.HTTP_400_BAD_REQUEST)
             
         game = Game.objects.create(created_by=request.user)
-        player = Player.objects.create(user=request.user, in_game=game)
+        player = Player.objects.create(user=request.user, game=game)
         game.players.add(player)
         game.save()
         return Response(GameSerializer(game).data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk=None):
         game = get_object_or_404(Game, pk=pk)
-        if not Player.objects.filter(user=request.user, in_game=game).exists():
+        if not Player.objects.filter(user=request.user, game=game).exists():
             return Response({"error": "Not a player in this game"}, status=status.HTTP_403_FORBIDDEN)
         return Response(GameSerializer(game, context={'request': request}).data)
 
@@ -45,17 +45,17 @@ class GameViewSet(viewsets.ViewSet):
     def join(self, request, pk=None):
         game = get_object_or_404(Game, pk=pk)
         
-        if game.started:
+        if game.game_started:
             return Response({"error": "Game already started"}, status=status.HTTP_400_BAD_REQUEST)
             
-        if Player.objects.filter(user=request.user, in_game=game).exists():
+        if Player.objects.filter(user=request.user, game=game).exists():
             return Response({"error": "Already in game"}, status=status.HTTP_400_BAD_REQUEST)
             
-        active_games = Game.objects.filter(players__user=request.user, ended=False).count()
+        active_games = Game.objects.filter(players__user=request.user, game_ended=False).count()
         if active_games >= 5:
             return Response({"error": "Cannot have more than 5 active games"}, status=status.HTTP_400_BAD_REQUEST)
             
-        player = Player.objects.create(user=request.user, in_game=game)
+        player = Player.objects.create(user=request.user, game=game)
         game.players.add(player)
         game.save()
         return Response(GameSerializer(game).data)
@@ -64,17 +64,17 @@ class GameViewSet(viewsets.ViewSet):
     def start(self, request, pk=None):
         game = get_object_or_404(Game, pk=pk)
         
-        if game.started or game.ended:
+        if game.game_started or game.game_ended:
             return Response({"error": "Invalid game state"}, status=status.HTTP_400_BAD_REQUEST)
             
-        if game.player_set.count() < 2:
+        if game.players.count() < 2:
             return Response({"error": "Need 2+ players"}, status=status.HTTP_400_BAD_REQUEST)
             
         if request.user != game.created_by:
             return Response({"error": "Only the game creator can start the game"}, status=status.HTTP_403_FORBIDDEN)
             
         setup_game(game)
-        game.started = True
+        game.game_started = True
         game.save()
         
         return Response(GameSerializer(game).data)

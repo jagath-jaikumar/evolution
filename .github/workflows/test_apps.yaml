@@ -57,7 +57,6 @@ jobs:
         
     - name: Run Django tests
       env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_postgres
         EVOLUTION_AUTH0_DOMAIN: dev-c4pf4ngumdste5ne.us.auth0.com
       run: |
         poetry run python -m evolution.manage test

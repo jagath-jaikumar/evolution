@@ -1,12 +1,13 @@
+import base64
+import json
 import os
+import time
+
 import requests
 import typer
-import time
-from auth0.authentication.token_verifier import TokenVerifier, AsymmetricSignatureVerifier
-import jwt
-import json
+from auth0.authentication.token_verifier import (AsymmetricSignatureVerifier,
+                                                 TokenVerifier)
 from rich import print
-import base64
 
 APP_DIR = ".evolution"
 

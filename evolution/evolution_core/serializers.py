@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from evolution.evolution_core.models import Game, Player, Epoch
+from evolution.evolution_core.models import Epoch, Game, Player
+
 
 class EpochSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,13 +37,9 @@ class GameSerializer(serializers.ModelSerializer):
         fields = [
             'id', 
             'created_at',
-            'created_by_this_user',
-            'player_table',
             'active_areas',
-            'started',
-            'ended',
+            'game_started',
+            'game_ended',
             'current_epoch',
-            'this_player',
-            'other_players',
             'player_count'
         ]

@@ -5,13 +5,14 @@ from django.db import models
 
 from evolution.evolution_core.mechanics.phases import Phase
 
-def short_uuid_lambda():
-    return lambda: str(uuid.uuid4())[:8]
+
+def short_uuid():
+    return str(uuid.uuid4())[:8]
 
 class Player(models.Model):
     id = models.CharField(
         primary_key=True,
-        default=short_uuid_lambda,
+        default=short_uuid,
         editable=False,
         db_index=True,
         max_length=8,
@@ -33,7 +34,7 @@ class Player(models.Model):
 class Game(models.Model):
     id = models.CharField(
         primary_key=True,
-        default=short_uuid_lambda,
+        default=short_uuid,
         editable=False,
         db_index=True,
         max_length=8,
@@ -62,7 +63,7 @@ class Game(models.Model):
 class GameAction(models.Model):
     id = models.CharField(
         primary_key=True,
-        default=short_uuid_lambda,
+        default=short_uuid,
         editable=False,
         db_index=True,
         max_length=8,
@@ -85,7 +86,7 @@ class GameAction(models.Model):
 class Epoch(models.Model):
     id = models.CharField(
         primary_key=True,
-        default=short_uuid_lambda,
+        default=short_uuid,
         editable=False,
         db_index=True,
         max_length=8,

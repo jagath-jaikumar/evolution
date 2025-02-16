@@ -2,10 +2,9 @@ import os
 from typing import Any, Dict, Optional
 
 import requests
-import typer
-from rich import print as rprint
 
-from evolution.client.auth import authenticate, AuthenticationError
+from evolution.client.auth import AuthenticationError, authenticate
+
 
 @authenticate
 def make_request(
