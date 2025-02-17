@@ -54,9 +54,10 @@ def authenticate(func):
 
     def wrapper(*args, **kwargs):
         token_data = load_tokens()
-        if token_data:
+        try:
             validate_token(token_data["id_token"])
-        else:
+        except Exception as e:
+            print(f"Could not validate token: {e}")
             token_data = login()
 
         return func(*args, token=token_data["access_token"], **kwargs)

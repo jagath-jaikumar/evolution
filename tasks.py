@@ -10,13 +10,13 @@ def install(c, dev=False):
 
 
 @task
-def test_apps(c, pty=True):
-    c.run("poetry run python -m evolution.manage test", pty=pty)
+def test_apps(c, a: str = "", pty=True):
+    c.run(f"poetry run python -m evolution.manage test {a}", pty=pty)
 
 
 @task
-def test_libs(c, pty=True):
-    c.run("poetry run pytest", pty=pty)
+def test_libs(c, a: str = "", pty=True):
+    c.run(f"poetry run pytest {a}", pty=pty)
 
 
 @task

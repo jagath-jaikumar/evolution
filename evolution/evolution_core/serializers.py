@@ -10,12 +10,10 @@ class EpochSerializer(serializers.ModelSerializer):
 
 
 class PlayerSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(source="user.email")
     hand_count = serializers.SerializerMethodField()
-
     class Meta:
         model = Player
-        fields = ["score", "animals", "animal_order", "email", "hand_count"]
+        fields = ["user", "score", "animals", "seat_position", "hand_count"]
 
     def get_hand_count(self, obj):
         return len(obj.hand)
@@ -24,13 +22,31 @@ class PlayerSerializer(serializers.ModelSerializer):
 class PlayerDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ["id", "score", "hand", "animals", "animal_order"]
+        fields = ["game", "user", "score", "hand", "animals", "seat_position"]
 
 
 class GameSerializer(serializers.ModelSerializer):
-    player_count = serializers.IntegerField(source="players.count", read_only=True)
     current_epoch = EpochSerializer(read_only=True)
+    created_by_user = serializers.SerializerMethodField()
+    players = PlayerSerializer(many=True, read_only=True)
 
     class Meta:
         model = Game
-        fields = ["id", "created_at", "active_areas", "game_started", "game_ended", "current_epoch", "player_count"]
+        fields = [
+            "id", 
+            "created_at",
+            "created_by_user",
+            "active_areas",
+            "game_started",
+            "game_ended",
+            "current_epoch",
+            "players",
+        ]
+
+    def get_created_by_user(self, obj):
+        request = self.context.get('request')
+        if request and request.user:
+            return obj.created_by == request.user
+        return False
+
+    

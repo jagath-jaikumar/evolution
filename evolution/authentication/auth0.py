@@ -92,7 +92,7 @@ class Auth0Authentication(BaseAuthentication):
                     user.save()
 
                 cache.set(cache_key, user, 300)  # Cache user for 5 minutes
-            
+
             duration = time.perf_counter() - start
             logger.debug(f"Authentication took {duration:.2f} seconds to process.")
             return (user, None)
