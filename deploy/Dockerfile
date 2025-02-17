@@ -6,7 +6,7 @@ FROM python:3.11-slim AS builder
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     POETRY_VERSION=1.8.4
-    
+
 # Install build dependencies
 RUN apt-get update \
     && apt-get install --no-install-recommends -y gcc libpq-dev curl \
@@ -55,4 +55,4 @@ COPY ./evolution ./evolution
 EXPOSE 8000
 
 # Set entrypoint for running the Django app
-CMD ["python", "-m", "gunicorn", "evolution.evolution_game.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["python", "-m", "gunicorn", "evolution.evolution_game.wsgi:application", "--bind", "0.0.0.0:$PORT"]
