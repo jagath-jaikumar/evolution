@@ -177,7 +177,7 @@ LOGGING = {
             "handlers": ["console"],
             "level": "INFO",
         },
-        "my_app": {
+        "evolution": {
             "handlers": ["console", "file"],
             "level": "DEBUG",
             "propagate": True,

@@ -1,5 +1,6 @@
 import logging
 from functools import lru_cache
+import time
 
 import requests
 from django.contrib.auth.models import User
@@ -47,6 +48,7 @@ def get_user_info(token):
 
 class Auth0Authentication(BaseAuthentication):
     def authenticate(self, request):
+        start = time.perf_counter()
         auth_header = request.headers.get("Authorization", "")
         if not auth_header.startswith("Bearer "):
             return None
@@ -90,7 +92,9 @@ class Auth0Authentication(BaseAuthentication):
                     user.save()
 
                 cache.set(cache_key, user, 300)  # Cache user for 5 minutes
-
+            
+            duration = time.perf_counter() - start
+            logger.debug(f"Authentication took {duration:.2f} seconds to process.")
             return (user, None)
 
         except jwt.ExpiredSignatureError:
