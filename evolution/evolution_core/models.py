@@ -56,7 +56,7 @@ class Game(models.Model):
 
     def __str__(self):
         epoch_num = self.current_epoch.epoch_number if self.current_epoch else None
-        return f"Game {self.id} - Epoch {epoch_num} - Started: {self.started} - Players: {self.players.count()}"
+        return f"Game {self.id} - Epoch {epoch_num} - Started: {self.game_started} - Players: {self.players.count()}"
 
 
 

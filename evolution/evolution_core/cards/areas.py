@@ -4,7 +4,7 @@ from typing import List, Optional
 import evolution.evolution_core.cards.traits as traits
 
 
-@dataclass
+@dataclass(frozen=True)
 class Area:
     name: str
     shelter_tokens: int

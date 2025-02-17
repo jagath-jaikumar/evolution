@@ -12,6 +12,6 @@ class RequestTimeMiddleware:
         response = self.get_response(request)
         duration = time.time() - start_time
 
-        logger.debug(f"Request took {duration} seconds to process.")
+        logger.debug(f"Request took {duration:.2f} seconds to process.")
 
         return response

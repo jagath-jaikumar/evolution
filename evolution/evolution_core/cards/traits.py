@@ -18,7 +18,7 @@ class Icons(Enum):
     shelter = "<shelter>"
 
 
-@dataclass
+@dataclass(frozen=True)
 class Trait:
     name: str
     description: str | None = None

@@ -1,5 +1,6 @@
 import logging
 from functools import lru_cache
+import time
 
 import requests
 from django.contrib.auth.models import User
@@ -70,6 +71,7 @@ class Auth0Authentication(BaseAuthentication):
                 issuer=f"https://{AUTH0_DOMAIN}/",
             )
 
+
             username = payload.get("sub")
             if not username:
                 raise AuthenticationFailed("No sub claim in token")
@@ -82,25 +84,12 @@ class Auth0Authentication(BaseAuthentication):
                 try:
                     user = User.objects.get(username=username)
                 except User.DoesNotExist:
-
-                    if "clients" in username:
-                        # user is a m2m client
-                        user = User.objects.create(
-                            username=username,
-                            email="jagath.jaikumar@gmail.com"
-                        )
-
-                    else:
-                        user_info = get_user_info(token)
-                        email = user_info.get("email")
-                        breakpoint()
-                        if not email:
-                            raise AuthenticationFailed("Email not found in userinfo")
-
-                        user = User.objects.create(
-                            username=username,
-                            email=email
-                        )
+                    user_info = get_user_info(token)
+                    user = User.objects.create(
+                        username=username,
+                        first_name=user_info.get("given_name"),
+                        last_name=user_info.get("family_name"),
+                    )
                     user.set_unusable_password()
                     user.save()
                 
