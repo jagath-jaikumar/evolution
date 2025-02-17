@@ -1,12 +1,12 @@
-from dataclasses import asdict
 import random
-from evolution.evolution_core.cards.areas import get_area_deck
+from collections import defaultdict
+from dataclasses import asdict
 
+from evolution.evolution_core.cards.areas import get_area_deck
 from evolution.evolution_core.cards.traits import get_trait_deck
 from evolution.evolution_core.mechanics.phases import Phase
-from evolution.evolution_core.models import Game, Epoch
+from evolution.evolution_core.models import Epoch, Game
 
-from collections import defaultdict
 
 def setup_game(game: Game) -> Game:
     # set the seat positions for each player

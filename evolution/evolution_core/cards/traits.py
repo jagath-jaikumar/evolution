@@ -1,8 +1,8 @@
-
-from enum import StrEnum
 import copy
 import random
 from dataclasses import dataclass, field
+from enum import StrEnum
+
 
 class TraitClass(StrEnum):
     nutritive = "nutritive"
@@ -654,6 +654,7 @@ TRAIT_DECK = [
     TraitCard([EcosystemEngineer(), FatTissue()]),
     TraitCard([Partnership(), FatTissue()]),
 ]
+
 
 def get_trait_deck(shuffle: bool = True):
     deck = copy.deepcopy(TRAIT_DECK)

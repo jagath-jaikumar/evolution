@@ -1,6 +1,6 @@
 import logging
-from functools import lru_cache
 import time
+from functools import lru_cache
 
 import requests
 from django.contrib.auth.models import User

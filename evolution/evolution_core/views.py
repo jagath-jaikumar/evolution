@@ -10,7 +10,6 @@ from evolution.evolution_core.serializers import GameSerializer
 
 
 class GameViewSet(viewsets.ViewSet):
-
     permission_classes = [IsAuthenticated]
     serializer_class = GameSerializer
 

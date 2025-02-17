@@ -23,3 +23,9 @@ def test_libs(c, a: str = "", pty=True):
 def test(c, pty=True):
     c.run("poetry run pytest", pty=pty)
     c.run("poetry run python -m evolution.manage test", pty=pty)
+
+
+@task
+def lint(c):
+    c.run("isort .")
+    c.run("ruff format")

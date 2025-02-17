@@ -11,6 +11,7 @@ class EpochSerializer(serializers.ModelSerializer):
 
 class PlayerSerializer(serializers.ModelSerializer):
     hand_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Player
         fields = ["user", "score", "animals", "seat_position", "hand_count"]
@@ -33,7 +34,7 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = [
-            "id", 
+            "id",
             "created_at",
             "created_by_user",
             "active_areas",
@@ -44,9 +45,7 @@ class GameSerializer(serializers.ModelSerializer):
         ]
 
     def get_created_by_user(self, obj):
-        request = self.context.get('request')
+        request = self.context.get("request")
         if request and request.user:
             return obj.created_by == request.user
         return False
-
-    

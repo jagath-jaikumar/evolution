@@ -3,8 +3,8 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from evolution.evolution_core.models import Game, Player
 from evolution.evolution_core.mechanics.phases import Phase
+from evolution.evolution_core.models import Game, Player
 
 
 class GameViewSetTests(TestCase):
