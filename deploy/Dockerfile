@@ -55,4 +55,4 @@ COPY ./evolution ./evolution
 EXPOSE 8000
 
 # Set entrypoint for running the Django app
-CMD ["python", "-m", "gunicorn", "evolution.evolution_game.wsgi:application", "--bind", "0.0.0.0:$PORT"]
+CMD ["python", "-m", "gunicorn", "evolution.evolution_game.wsgi:application", "--bind", "0.0.0.0:8000"]
