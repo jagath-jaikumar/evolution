@@ -30,6 +30,7 @@ class Player(models.Model):
 
     class Meta:
         ordering = ["seat_position"]  # Default ordering by seat
+        unique_together = (("game", "seat_position"),)
 
 
 class Game(models.Model):
@@ -96,7 +97,7 @@ class Epoch(models.Model):
     first_player = models.ForeignKey(
         Player, on_delete=models.CASCADE, related_name="epochs_as_first_player", db_index=True
     )
-    current_phase = models.CharField(max_length=100, default=Phase.DEVELOPMENT, db_index=True)
+    current_phase = models.CharField(max_length=100, default=Phase.DEVELOPMENT.value, db_index=True)
     current_player = models.ForeignKey(
         Player, on_delete=models.CASCADE, null=True, related_name="epochs_as_current_player", db_index=True
     )

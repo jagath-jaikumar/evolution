@@ -1,5 +1,7 @@
 import os
 from typing import Any, Dict, Optional
+import typer
+from rich import print
 
 import requests
 
@@ -36,7 +38,5 @@ def make_request(
 
     if response.status_code == 403:
         raise AuthenticationError("Invalid token")
-
-    response.raise_for_status()
 
     return response

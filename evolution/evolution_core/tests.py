@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from evolution.evolution_core.models import Game, Player
+from evolution.evolution_core.mechanics.phases import Phase
 
 
 class GameViewSetTests(TestCase):
@@ -108,6 +109,27 @@ class GameViewSetTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         game.refresh_from_db()
         self.assertTrue(game.game_started)
+
+        for player in game.players.all():
+            self.assertIsNotNone(player.seat_position)
+            self.assertLess(player.seat_position, game.players.count())
+            self.assertGreaterEqual(player.seat_position, 0)
+
+        assert game.active_areas
+        assert game.waiting_areas
+        assert len(game.active_areas) == game.players.count()
+        assert len(game.waiting_areas) == 6
+
+        for player in game.players.all():
+            assert player.hand
+            assert len(player.hand) == 6
+
+        assert game.trait_deck
+        assert len(game.trait_deck) == 146 - (game.players.count() * 6)
+
+        assert game.current_epoch
+        assert game.current_epoch.current_phase == Phase.DEVELOPMENT.value
+        assert game.current_epoch.current_player
 
     def test_start_game_not_enough_players(self):
         game = Game.objects.create(created_by=self.user1)

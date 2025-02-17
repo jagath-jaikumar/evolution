@@ -41,6 +41,7 @@ def set_active(game_id: str):
 def delete(game_id: str):
     """Delete a game"""
     make_request("DELETE", f"/api/game/{game_id}/")
+    typer.echo(f"Game {game_id} deleted")
 
 
 @app.command()

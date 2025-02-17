@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
-
+import copy
+import random
 import evolution.evolution_core.cards.traits as traits
 
 
@@ -104,3 +105,9 @@ def create_area(name):
 
 
 AREA_DECK = [AreaCard([create_area(name) for name in card]) for card in AREA_DECK_LAYOUT]
+
+def get_area_deck(shuffle: bool = True):
+    deck = copy.deepcopy(AREA_DECK)
+    if shuffle:
+        random.shuffle(deck)
+    return deck

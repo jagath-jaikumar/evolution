@@ -10,7 +10,7 @@ from evolution.evolution_core.serializers import GameSerializer
 
 
 class GameViewSet(viewsets.ViewSet):
-    
+
     permission_classes = [IsAuthenticated]
     serializer_class = GameSerializer
 
@@ -24,7 +24,7 @@ class GameViewSet(viewsets.ViewSet):
             return Response({"error": "Cannot have more than 5 active games"}, status=status.HTTP_400_BAD_REQUEST)
 
         game = Game.objects.create(created_by=request.user)
-        player = Player.objects.create(user=request.user, game=game, seat_position=0)
+        player = Player.objects.create(user=request.user, game=game)
         game.players.add(player)
         game.save()
         return Response(GameSerializer(game).data, status=status.HTTP_201_CREATED)
@@ -56,7 +56,7 @@ class GameViewSet(viewsets.ViewSet):
         if active_games >= 5:
             return Response({"error": "Cannot have more than 5 active games"}, status=status.HTTP_400_BAD_REQUEST)
 
-        player = Player.objects.create(user=request.user, game=game, seat_position=game.players.count())
+        player = Player.objects.create(user=request.user, game=game)
         game.players.add(player)
         game.save()
         return Response(GameSerializer(game).data)
