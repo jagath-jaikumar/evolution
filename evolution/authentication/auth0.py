@@ -8,10 +8,10 @@ from jose import jwt
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
-from evolution.authentication.constants import (ALGORITHMS, API_IDENTIFIER,
-                                                AUTH0_DOMAIN)
+from evolution.authentication.constants import ALGORITHMS, API_IDENTIFIER, AUTH0_DOMAIN
 
 logger = logging.getLogger(__name__)
+
 
 # Cache public keys for 1 hour since they rarely change
 @lru_cache(maxsize=1)
@@ -24,6 +24,7 @@ def get_public_key():
         logger.error(f"Failed to fetch public keys: {e}")
         return {}
 
+
 # Cache user info for 5 minutes to reduce Auth0 API calls
 def get_user_info(token):
     cache_key = f"userinfo_{token[:32]}"  # Use part of token as cache key
@@ -33,11 +34,7 @@ def get_user_info(token):
 
     userinfo_url = f"https://{AUTH0_DOMAIN}/userinfo"
     try:
-        response = requests.get(
-            userinfo_url,
-            headers={"Authorization": f"Bearer {token}"},
-            timeout=5
-        )
+        response = requests.get(userinfo_url, headers={"Authorization": f"Bearer {token}"}, timeout=5)
         if response.status_code != 200:
             raise AuthenticationFailed("Failed to fetch user info")
         user_info = response.json()
@@ -46,6 +43,7 @@ def get_user_info(token):
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to fetch user info: {e}")
         raise AuthenticationFailed("Failed to fetch user info")
+
 
 class Auth0Authentication(BaseAuthentication):
     def authenticate(self, request):
@@ -70,7 +68,6 @@ class Auth0Authentication(BaseAuthentication):
                 issuer=f"https://{AUTH0_DOMAIN}/",
             )
 
-
             username = payload.get("sub")
             if not username:
                 raise AuthenticationFailed("No sub claim in token")
@@ -78,7 +75,7 @@ class Auth0Authentication(BaseAuthentication):
             # Cache user objects to reduce database queries
             cache_key = f"auth0_user_{username}"
             user = cache.get(cache_key)
-            
+
             if not user:
                 try:
                     user = User.objects.get(username=username)
@@ -91,7 +88,7 @@ class Auth0Authentication(BaseAuthentication):
                     )
                     user.set_unusable_password()
                     user.save()
-                
+
                 cache.set(cache_key, user, 300)  # Cache user for 5 minutes
 
             return (user, None)

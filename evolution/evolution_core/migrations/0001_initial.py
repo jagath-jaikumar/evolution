@@ -35,9 +35,7 @@ class Migration(migrations.Migration):
                     "current_phase",
                     models.CharField(
                         db_index=True,
-                        default=evolution.evolution_core.mechanics.phases.Phase[
-                            "DEVELOPMENT"
-                        ],
+                        default=evolution.evolution_core.mechanics.phases.Phase["DEVELOPMENT"],
                         max_length=100,
                     ),
                 ),
@@ -161,9 +159,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="gameaction",
             name="player",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="evolution_core.player"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="evolution_core.player"),
         ),
         migrations.AddField(
             model_name="epoch",

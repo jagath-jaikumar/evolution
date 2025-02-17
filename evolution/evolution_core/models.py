@@ -9,6 +9,7 @@ from evolution.evolution_core.mechanics.phases import Phase
 def short_uuid():
     return str(uuid.uuid4())[:8]
 
+
 class Player(models.Model):
     id = models.CharField(
         primary_key=True,
@@ -17,7 +18,7 @@ class Player(models.Model):
         db_index=True,
         max_length=8,
     )
-    game = models.ForeignKey("Game", on_delete=models.CASCADE, related_name='players')
+    game = models.ForeignKey("Game", on_delete=models.CASCADE, related_name="players")
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
     score = models.IntegerField(default=0, db_index=True)
     hand = models.JSONField(default=list)
@@ -26,9 +27,9 @@ class Player(models.Model):
 
     def __str__(self):
         return self.user.username
-    
+
     class Meta:
-        ordering = ['seat_position']  # Default ordering by seat
+        ordering = ["seat_position"]  # Default ordering by seat
 
 
 class Game(models.Model):
@@ -59,7 +60,6 @@ class Game(models.Model):
         return f"Game {self.id} - Epoch {epoch_num} - Started: {self.game_started} - Players: {self.players.count()}"
 
 
-
 class GameAction(models.Model):
     id = models.CharField(
         primary_key=True,
@@ -75,7 +75,7 @@ class GameAction(models.Model):
     action_number = models.IntegerField(default=0, db_index=True)
 
     class Meta:
-        ordering = ['-action_number']
+        ordering = ["-action_number"]
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -93,9 +93,10 @@ class Epoch(models.Model):
     )
     epoch_number = models.IntegerField(default=1, db_index=True)
     previous_epoch = models.ForeignKey("Epoch", on_delete=models.CASCADE, null=True, db_index=True)
-    first_player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="epochs_as_first_player", db_index=True)
+    first_player = models.ForeignKey(
+        Player, on_delete=models.CASCADE, related_name="epochs_as_first_player", db_index=True
+    )
     current_phase = models.CharField(max_length=100, default=Phase.DEVELOPMENT, db_index=True)
     current_player = models.ForeignKey(
         Player, on_delete=models.CASCADE, null=True, related_name="epochs_as_current_player", db_index=True
     )
-

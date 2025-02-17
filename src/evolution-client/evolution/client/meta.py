@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 APP_DIR_NAME = ".evolution"
 
@@ -25,6 +25,7 @@ def load_config():
 def save_config(config):
     with open(CONFIG_DIR, "w") as f:
         json.dump(config, f)
+
 
 def update_config(key, value):
     config = load_config()

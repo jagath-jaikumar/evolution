@@ -2,13 +2,14 @@ import copy
 import random
 
 from evolution.evolution_core.cards.areas import AREA_DECK
+
 # Area
 from evolution.evolution_core.cards.traits import TRAIT_DECK, TraitCard
+
 # from evolution.evolution_core.mechanics.phases import Phase
 from evolution.evolution_core.models import Game
 
 # from collections import defaultdict
-
 
 
 def _get_decks():

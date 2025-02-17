@@ -8,10 +8,11 @@ import typer
 from auth0.authentication.token_verifier import AsymmetricSignatureVerifier, TokenVerifier
 from rich import print
 
-from evolution.client.meta import APP_DIR, AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_AUDIENCE
+from evolution.client.meta import APP_DIR, AUTH0_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_DOMAIN
 
 TOKEN_FILE = os.path.join(APP_DIR, "tokens.json")
 ENCODE_TOKENS = True
+
 
 class AuthenticationError(Exception):
     pass

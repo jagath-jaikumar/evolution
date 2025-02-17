@@ -8,4 +8,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL("CREATE INDEX idx_username ON auth_user (username)"),
-    ] 
+    ]
