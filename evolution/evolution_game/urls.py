@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.urls import include, path
 
 from evolution.evolution_core.views import router as core_router
-from evolution.evolution_game.settings import DEBUG
 from evolution.evolution_game.views import (liveness_check, readiness_check,
                                             root)
 
