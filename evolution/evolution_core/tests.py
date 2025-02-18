@@ -2,10 +2,13 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
+import logging
 
 from evolution.evolution_core.mechanics.phases import Phase
+from evolution.evolution_core.mechanics.setup import setup_game
 from evolution.evolution_core.models import Game, Player
 
+logger = logging.getLogger(__name__)
 
 class GameViewSetTests(TestCase):
     def setUp(self):
@@ -144,10 +147,22 @@ class GameViewSetTests(TestCase):
 class PlayViewSetTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(username="testuser", password="12345")
-        self.client.force_authenticate(user=self.user)
+        self.user1 = User.objects.create_user(username="testuser1", password="12345")
+        self.user2 = User.objects.create_user(username="testuser2", password="12345")
 
-    def test_make_move_not_implemented(self):
-        game = Game.objects.create(created_by=self.user)
+    def test_make_move_not_your_turn(self):
+        game = Game.objects.create(created_by=self.user1, game_started=True)
+        player1 = Player.objects.create(user=self.user1, game=game)
+        player2 = Player.objects.create(user=self.user2, game=game)
+        game.players.add(player1, player2)
+        game = setup_game(game)
+        first_user = game.current_epoch.current_player.user
+
+        if first_user.username == self.user1.username:
+            self.client.force_authenticate(user=self.user2)
+        else:
+            self.client.force_authenticate(user=self.user1)
+
         response = self.client.post(f"/api/play/{game.id}/make_move/")
-        self.assertEqual(response.status_code, status.HTTP_501_NOT_IMPLEMENTED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert response.data["error"] == "Not your turn"

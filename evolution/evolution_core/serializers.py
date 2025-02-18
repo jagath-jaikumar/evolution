@@ -49,3 +49,20 @@ class GameSerializer(serializers.ModelSerializer):
         if request and request.user:
             return obj.created_by == request.user
         return False
+
+class DevelopmentMoveSerializer(serializers.Serializer):
+    move_type = serializers.ChoiceField(choices=['new_animal', 'add_trait'])
+    card_index = serializers.IntegerField()  # Index of card in player's hand to use
+    target_animal = serializers.CharField(required=False)  # Required for add_trait, ID of animal to add trait to
+    player_pass = serializers.BooleanField(default=False)  # If true, player passes their turn
+    
+class FeedingMoveSerializer(serializers.Serializer):
+    move_type = serializers.ChoiceField(choices=['feed', 'eat', 'shelter'])
+    target_area = serializers.IntegerField(required=False)  # Index of area to target
+    target_animal = serializers.CharField(required=False)  # Required for eat, ID of animal to eat
+    player_pass = serializers.BooleanField(default=False)  # If true, player passes their turn
+    ignore_traits = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        default=list
+    )

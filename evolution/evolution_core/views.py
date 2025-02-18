@@ -3,12 +3,15 @@ from rest_framework import routers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+import logging
 
 from evolution.evolution_core.mechanics.setup import setup_game
+from evolution.evolution_core.mechanics.moves import resolve_development_move, resolve_feeding_move
 from evolution.evolution_core.models import Game, Player
-from evolution.evolution_core.serializers import GameSerializer
+from evolution.evolution_core.mechanics.phases import Phase
+from evolution.evolution_core.serializers import GameSerializer, DevelopmentMoveSerializer, FeedingMoveSerializer
 
-
+logger = logging.getLogger(__name__)
 class GameViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = GameSerializer
@@ -86,9 +89,31 @@ class PlayViewSet(viewsets.ViewSet):
 
     @action(detail=True, methods=["post"])
     def make_move(self, request, pk=None):
-        # TODO: Implement game move logic
-        return Response({"message": "Move endpoint not yet implemented"}, status=status.HTTP_501_NOT_IMPLEMENTED)
+        game = get_object_or_404(Game, pk=pk)
 
+        if request.user != game.current_epoch.current_player.user:
+            logger.error(f"Not {request.user}'s turn in game {game.id}")
+            return Response({"error": "Not your turn"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if game.current_epoch.current_phase == Phase.DEVELOPMENT.value:
+            move_serializer = DevelopmentMoveSerializer(data=request.data)
+            if move_serializer.is_valid():
+                move = move_serializer.validated_data
+                game = resolve_development_move(move, game)
+                
+        elif game.current_epoch.current_phase == Phase.FEEDING.value:
+            move_serializer = FeedingMoveSerializer(data=request.data)
+            if move_serializer.is_valid():
+                move = move_serializer.validated_data
+                game = resolve_feeding_move(move, game)
+
+        else:
+            logger.error(f"Invalid move in game {game.id}. Move: {request.data}")
+            return Response({"error": "Invalid move. Please check your move and try again."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        game.save()
+
+        return Response(GameSerializer(game).data)
 
 router = routers.DefaultRouter()
 router.register(r"game", GameViewSet, basename="game")
