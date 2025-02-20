@@ -1,6 +1,15 @@
 from evolution.evolution_core.cards.traits import TraitClass
 from evolution.evolution_core.models import Animal
 
+def attack(predator: Animal, prey: Animal):
+    if (_valid_attack(predator, prey)) == 0:
+        raise ValueError("Cannot attack this animal")
+    elif (_valid_attack(predator, prey)) == 1:
+        #allow prey to respond
+        return
+    else:
+        # prey is eaten
+        return
 
 def _countPreyTraits(preyTraits):
     numPreyTraits = len(preyTraits)
@@ -9,7 +18,7 @@ def _countPreyTraits(preyTraits):
     return numPreyTraits
 
 
-def count(predator: Animal, prey: Animal):
+def _count_protection(predator: Animal, prey: Animal):
     """
     Counts number of protective traits remaining for prey after
     nullifying protective traits using predator's predatory traits
@@ -80,16 +89,20 @@ def count(predator: Animal, prey: Animal):
     return len(remaining_Traits)
 
 
-def valid_attack(predator, prey):
+def _valid_attack(predator: Animal, prey: Animal):
     """
     - If predator swimming, prey swimming
     - Resolve anglerfish
     - Count attacking traits vs defending traits
         - Intellect/Pack hunting is auto +1/2
             - If sums are equal, choose what trait(s) to ignore
-    - Resolve attack
 
+    if 0: predator can't attack
+    if 1: attack, and prey responds
+    if 2: attack successful, prey doesn't respond
+            
     MAYBE:
     Modulate effect for voracious/insectivore
     """
-    return False
+
+    return 0
