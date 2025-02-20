@@ -1,8 +1,10 @@
+import copy
+import random
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class TraitClass(Enum):
+class TraitClass(StrEnum):
     nutritive = "nutritive"
     predatory = "predatory"
     protective = "protective"
@@ -10,7 +12,7 @@ class TraitClass(Enum):
     special = "special"
 
 
-class Icons(Enum):
+class Icons(StrEnum):
     animal = "<animal>"
     food = "<food>"
     meat = "<meat>"
@@ -18,7 +20,7 @@ class Icons(Enum):
     shelter = "<shelter>"
 
 
-@dataclass
+@dataclass(frozen=True)
 class Trait:
     name: str
     description: str | None = None
@@ -652,3 +654,10 @@ TRAIT_DECK = [
     TraitCard([EcosystemEngineer(), FatTissue()]),
     TraitCard([Partnership(), FatTissue()]),
 ]
+
+
+def get_trait_deck(shuffle: bool = True):
+    deck = copy.deepcopy(TRAIT_DECK)
+    if shuffle:
+        random.shuffle(deck)
+    return deck

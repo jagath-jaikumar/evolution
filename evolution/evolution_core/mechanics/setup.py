@@ -1,74 +1,60 @@
-import copy
 import random
+from collections import defaultdict
+from dataclasses import asdict
 
-from evolution.evolution_core.cards.areas import AREA_DECK
-# Area
-from evolution.evolution_core.cards.traits import TRAIT_DECK, TraitCard
-# from evolution.evolution_core.mechanics.phases import Phase
-from evolution.evolution_core.models import Game
-
-# from collections import defaultdict
-
+from evolution.evolution_core.cards.areas import get_area_deck
+from evolution.evolution_core.cards.traits import get_trait_deck
+from evolution.evolution_core.mechanics.phases import Phase
+from evolution.evolution_core.models import Epoch, Game
 
 
-def _get_decks():
-    area_deck = copy.deepcopy(AREA_DECK)
-    trait_deck = copy.deepcopy(TRAIT_DECK)
-    random.shuffle(area_deck)
-    random.shuffle(trait_deck)
-    return area_deck, trait_deck
+def setup_game(game: Game) -> Game:
+    # set the seat positions for each player
+    for i, player in enumerate(game.players.all()):
+        player.seat_position = i
+        player.save()
 
+    # get the shuffled decks
+    area_deck = get_area_deck(shuffle=True)
+    trait_deck = get_trait_deck(shuffle=True)
 
-def _trait_deck_to_json(trait_deck: list[TraitCard]):
-    return [trait.to_json() for trait in trait_deck]
+    # draw n_players active area cards to start
+    def _draw_area_cards(area_deck: list, num_cards: int) -> list[dict]:
+        areas = []
+        for _ in range(num_cards):
+            areas.append(asdict(area_deck.pop()))
+        return areas
 
+    # draw n_players active area cards to start
+    game.active_areas = _draw_area_cards(area_deck, game.players.count())
 
-def setup_game(game: Game):
-    # # set the players at the table in a random order
-    # player_ids = [str(player.id) for player in game.players.all()]
-    # random.shuffle(player_ids)
-    # game.player_table = player_ids
+    # draw 6 areas cards in waiting
+    game.waiting_areas = _draw_area_cards(area_deck, 6)
 
-    # # get the shuffled decks
-    # area_deck, trait_deck = _get_decks()
+    # deal 6 trait cards to each player
+    players = game.players.all()
 
-    # # draw n_players active area cards to start
-    # def _draw_area_cards(game: Game, area_deck: list, num_cards: int):
-    #     areas = []
-    #     for _ in range(num_cards):
-    #         areas.extend(area_deck.pop().areas)
-    #     return areas
+    player_hands = defaultdict(list)
+    for _ in range(6):
+        for player in players:
+            player_hands[player.id].append(asdict(trait_deck.pop()))
 
-    # # draw n_players active area cards to start
-    # _draw_area_cards(game, area_deck, game.players.count(), "active")
+    for player in players:
+        player.hand = player_hands[player.id]
+        player.save()
 
-    # # draw 6 areas cards in waiting
-    # _draw_area_cards(game, area_deck, 6, "waiting")
+    # save the rest of the trait deck to the game object
+    game.trait_deck = [asdict(trait) for trait in trait_deck]
 
-    # # TODO:
-    # # deal 6 trait cards to each player
-    # players = game.players.all()
-    # player_hands = defaultdict(list)
-    # for _ in range(6):
-    #     for player in players:
-    #         player_hands[player.id].append(trait_deck.pop())
-
-    # for player in players:
-    #     player.hand = _trait_deck_to_json(player_hands[player.id])
-    #     player.save()
-
-    # # save the rest of the trait deck to the game object
-    # game.trait_deck = _trait_deck_to_json(trait_deck)
-
-    # # create the first epoch with a random first player
-    # first_player = random.choice(players)
-    # first_epoch = Epoch.objects.create(
-    #     game=game,
-    #     first_player=first_player,
-    #     current_phase=Phase.DEVELOPMENT,
-    #     current_player=first_player,
-    # )
-    # game.current_epoch = first_epoch
-    # game.save()
+    # create the first epoch with a random first player
+    first_player = random.choice(players)
+    first_epoch = Epoch.objects.create(
+        game=game,
+        first_player=first_player,
+        current_phase=Phase.DEVELOPMENT.value,
+        current_player=first_player,
+    )
+    game.current_epoch = first_epoch
+    game.save()
 
     return game

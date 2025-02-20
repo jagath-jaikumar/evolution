@@ -54,11 +54,6 @@ INSTALLED_APPS += [
     "evolution.evolution_core",
 ]
 
-if DEBUG:
-    INSTALLED_APPS += [
-        "debug_toolbar",
-    ]
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -107,11 +102,8 @@ DATABASES["TEST"] = {
     },
 }
 
-if 'test' in sys.argv:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'mydatabase'
-    }
+if "test" in sys.argv:
+    DATABASES["default"] = {"ENGINE": "django.db.backends.sqlite3", "NAME": "mydatabase"}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -185,7 +177,7 @@ LOGGING = {
             "handlers": ["console"],
             "level": "INFO",
         },
-        "my_app": {
+        "evolution": {
             "handlers": ["console", "file"],
             "level": "DEBUG",
             "propagate": True,

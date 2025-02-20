@@ -4,7 +4,8 @@ FROM python:3.11-slim AS builder
 
 # Set environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    POETRY_VERSION=1.8.4
 
 # Install build dependencies
 RUN apt-get update \
