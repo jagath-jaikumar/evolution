@@ -8,39 +8,35 @@ class Animal:
         self.is_sheltered = False
         self.traits = []
         self.food = 0
-        self.food_req = 0
+        self.food_req = 1
         self.fat = 0
-        self.fat_req = 0
+        self.fat_cap = 0
         self.score = 3
         self.bonus_action = 0
     
-    def add_trait(self, card: TraitCard, topBottom: int):
-        self.traits.append(card[int])
-        self.food_req += card[int].food_requirement
-        self.score += 1 + card[int].food_requirement
-        if isinstance(card[int], FatTissue):
-            self.fat_req += 1
-        if (card[int].is_bonus_action):
+    def add_trait(self, card: TraitCard, position: int):
+        self.traits.append(card.traits[position])
+        self.food_req += card.traits[position].food_requirement
+        self.score += 1 + card.traits[position].food_requirement
+        if isinstance(card.traits[position], FatTissue):
+            self.fat_cap += 1
+        if (card.traits[position].is_bonus_action):
             self.bonus_action += 1
     
-    def take_shelter(self, area_cards: list, cardNum: int, topBottom: int, food: bool):
+    def take_shelter(self):
         if (self.is_sheltered):
             raise ValueError("Cannot take shelter token: already sheltered")
         self.is_sheltered = True
     
     def take_food(self):
-        if (self.food + self.fat == self.food_req + self.fat_req):
+        if (self.food + self.fat == self.food_req + self.fat_cap):
             raise ValueError("Cannot take food tokens: already full with " + str(self.food) + " food/fat.")
         self.food += 1
-        if self.food > self.food_req:
-            self.food -+ 1
-            self.fat += 1
     
     def successful_hunt(self):
-        if (self.food + self.fat == self.food_req + self.fat_req):
+        if (self.food + self.fat == self.food_req + self.fat_cap):
             raise ValueError("Cannot eat another animal: already full with " + str(self.food) + " food/fat.")
         self.food += 2
-        return
 
     def bonus_action(self):
         return
