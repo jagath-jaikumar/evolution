@@ -1,6 +1,4 @@
-from evolution.evolution_core.cards.areas import Area
-from evolution.evolution_core.cards.traits import TraitCard, FatTissue, Trait
-from evolution.evolution_core.mechanics.attack import valid_attack # update this when attack.py done
+from evolution.evolution_core.cards.traits import TraitCard, FatTissue
 import uuid
 
 class Animal:
@@ -44,7 +42,7 @@ class Animal:
         self.food += 2
         return
 
-    def bonus_action(self, action: action):
+    def bonus_action(self):
         return
     
     def does_starve(self):
