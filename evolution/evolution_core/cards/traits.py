@@ -311,7 +311,7 @@ class TailLoss(Trait):
     def __init__(self):
         super().__init__(
             name="Tail Loss",
-            description=f"When this {Icons.animal} is attacked bya Predator, you may discard one of its traits. This {Icons.animal} survives, and the Predator takes {Icons.meat} from the supply instead of {Icons.meat} {Icons.meat}.",
+            description=f"When this {Icons.animal} is attacked by a Predator, you may discard one of its traits. This {Icons.animal} survives, and the Predator takes {Icons.meat} from the supply instead of {Icons.meat} {Icons.meat}.",
             trait_classes=[TraitClass.protective],
         )
 

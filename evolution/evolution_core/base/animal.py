@@ -1,4 +1,4 @@
-from evolution.evolution_core.cards.traits import Trait, TraitCard, FatTissue, Metamorphosis
+from evolution.evolution_core.cards.traits import Trait, TraitCard, FatTissue
 import uuid
 
 class Animal:
@@ -65,10 +65,21 @@ class Animal:
             self.bonus_action += 1
 
     def bonus_action(self):
-        # Piracy: use via take_food
-        # Homeothermy
-        # Ecosystem Engineer
+        '''
+        OPTIONAL AND CONDITIONAL:
+        Hibernation (extinction phase if does_starve() true)
+        Hoofed (when taking food)
+        Intellect (when attacking)
+        Repelling (when attacked), Tail Loss (when attacked), Angler Fish (when bald and attacked), Ink Cloud (when attacked)
         
+        OPTIONAL TO BE USED ON YOUR TURN:
+        Metamorphosis
+        Piracy: use via take_food
+        Homeothermy
+        Ecosystem Engineer
+        Detritivore
+        
+        '''
         return
     
     def does_starve(self):
