@@ -1,9 +1,11 @@
 from evolution.evolution_core.cards.areas import Area
 from evolution.evolution_core.cards.traits import TraitCard, FatTissue, Trait
 from evolution.evolution_core.mechanics.attack import valid_attack # update this when attack.py done
+import uuid
 
 class Animal:
     def __init__(self):
+        self.id = str(uuid.uuid4())[:8]
         # assuming you only initialize bald animals (account for angler fish separately):
         self.is_sheltered = False
         self.traits = []
@@ -55,8 +57,4 @@ Apply traits
 Take food/shelter
 Eat other animal
 Bonus action
-'''import uuid
-
-class Animal:
-    def __init__(self):
-        self.id = str(uuid.uuid4())[:8]
+'''
