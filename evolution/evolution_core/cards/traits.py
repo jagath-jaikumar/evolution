@@ -91,6 +91,7 @@ class HighBodyWeight(Trait):
                 TraitClass.protective,
                 TraitClass.nutritive,
             ],
+            food_requirement=1,
         )
 
 
