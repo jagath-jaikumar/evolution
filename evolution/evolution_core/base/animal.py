@@ -35,6 +35,9 @@ class Animal:
             self.available_bonus_action.remove(trait_to_remove)
         return self
     
+    def trait_check(self, trait: Trait): # True if animal has X trait. Use to check if an animal can feed from an area (eg lake, cave)
+        return (any(isinstance(trait, Trait) for trait in self.traits))
+
     def gain_shelter(self):
         if (self.is_sheltered):
             raise ValueError("Cannot take shelter token: already sheltered")
@@ -58,8 +61,6 @@ class Animal:
             raise ValueError("Cannot eat another animal: already full with " + str(self.food) + " food/fat.")
         self.food += 2
         return self
-        # animals can overfeed with this; be sure to modify at end of epoch
-
 
     '''
     NOTES ON BONUS ACTIONS:

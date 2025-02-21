@@ -2,7 +2,7 @@ import pytest
 from evolution.evolution_core.base.animal import Animal
 from evolution.evolution_core.cards.traits import (
     Carnivorous, Cosmopolitan, HighBodyWeight, 
-    FatTissue, Metamorphosis, Piracy, Detritivore)
+    FatTissue, Metamorphosis, Piracy, Detritivore, Swimming)
 
 def test_add_traits():
     my_animal = Animal().add_trait(Carnivorous()).add_trait(Cosmopolitan())
@@ -25,6 +25,13 @@ def test_shelter_and_hunting():
 
     assert my_animal.does_starve() is False
     assert my_animal.is_sheltered is True
+
+def test_trait_check():
+    my_animal = Animal()
+    assert my_animal.trait_check(Swimming()) is False
+
+    swimming_animal = Animal().add_trait(Swimming())
+    assert swimming_animal.trait_check(Swimming()) is True
 
 def test_metamorphosis():
     my_animal = Animal().add_trait(Cosmopolitan()).add_trait(Metamorphosis())
