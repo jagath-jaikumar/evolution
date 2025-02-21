@@ -3,7 +3,7 @@ from evolution.evolution_core.models import Player
 from evolution.evolution_core.base.animal import Animal
 # from evolution.evolution_core.mechanics.attack import valid_attack
 from evolution.evolution_core.cards.traits import (
-    Carnivorous, Intellect, Swimming, Camouflage)
+    Carnivorous, Swimming, Camouflage)
 from evolution.evolution_core.mechanics.attack import _retrieve_hard_protection
 
 def test_count_attack():

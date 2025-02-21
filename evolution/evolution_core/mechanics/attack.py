@@ -112,7 +112,6 @@ def _count_attack(att_player: Player, predator: Animal):
     '''
     return 0
 
-def _count_protection(predator: Animal, prey: Animal): # LEGACY
     """
     Counts number of protective traits remaining for prey after
     nullifying protective traits using predator's predatory traits
@@ -120,6 +119,9 @@ def _count_protection(predator: Animal, prey: Animal): # LEGACY
     Distinguish between "hard" protective traits where if predator unable to resolve,
     predator cannot attack, vs "soft" protective traits where predator can attack anyway (see below)
     """
+'''
+def _count_protection(predator: Animal, prey: Animal): # LEGACY
+
     predator_Traits = set(predator.traits)
 
     # Filter traits with "protective" trait class
@@ -151,5 +153,4 @@ def _count_protection(predator: Animal, prey: Animal): # LEGACY
             remaining_Traits.remove(trait)
             
     return len(remaining_Traits)
-
-
+'''    
