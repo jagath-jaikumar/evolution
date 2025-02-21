@@ -1,4 +1,3 @@
-import pytest
 from evolution.evolution_core.models import Player
 from evolution.evolution_core.base.animal import Animal
 # from evolution.evolution_core.mechanics.attack import valid_attack

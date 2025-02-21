@@ -1,5 +1,5 @@
 from evolution.evolution_core.cards.traits import (
-    TraitClass, Nocturnal, Swimming, HighBodyWeight, Camouflage, Burrowing, 
+    Nocturnal, Swimming, HighBodyWeight, Camouflage, Burrowing, 
     Transparent, Partnership, Flight, Patronage, DetrimentalMutation,
     Horned, Running, Repelling, TailLoss, InkCloud, Anglerfish, Poisonous)
 from evolution.evolution_core.base.animal import Animal
