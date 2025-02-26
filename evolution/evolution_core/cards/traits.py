@@ -29,6 +29,7 @@ class Trait:
     is_dlc: bool = False
     food_requirement: int = 0
     is_paired: bool = False
+    is_hard_protection: bool = False
 
     def __eq__(self, other):
         return self.name == other.name
@@ -91,6 +92,7 @@ class HighBodyWeight(Trait):
                 TraitClass.protective,
                 TraitClass.nutritive,
             ],
+            is_hard_protection = True,
             food_requirement=1,
         )
 
@@ -104,6 +106,7 @@ class Nocturnal(Trait):
                 TraitClass.protective,
                 TraitClass.nutritive,
             ],
+            is_hard_protection = True,
         )
 
 
@@ -126,6 +129,7 @@ class Swimming(Trait):
                 TraitClass.protective,
                 TraitClass.nutritive,
             ],
+            is_hard_protection = True,
         )
 
 
@@ -135,6 +139,7 @@ class Burrowing(Trait):
             name="Burrowing",
             description=f"If this {Icons.animal} is fed, it may not be attacked by a Predator.",
             trait_classes=[TraitClass.protective],
+            is_hard_protection = True,
         )
 
 
@@ -144,6 +149,7 @@ class Camouflage(Trait):
             name="Camouflage",
             description=f"To attack this {Icons.animal} a Predator must have Sharp Vision.",
             trait_classes=[TraitClass.protective],
+            is_hard_protection = True,
         )
 
 
@@ -239,6 +245,7 @@ class Partnership(Trait):
             description=f"If this {Icons.animal} has fewer traits than its 'Partner', it may not be attacked by a Predator.",
             trait_classes=[TraitClass.protective],
             is_paired=True,
+            is_hard_protection = True,
         )
 
 
@@ -322,6 +329,7 @@ class Transparent(Trait):
             name="Transparent",
             description=f"If there are no {Icons.food} or {Icons.meat} on this {Icons.animal}, it may not be attacked by a Predator.",
             trait_classes=[TraitClass.protective],
+            is_hard_protection = True,
         )
 
 
@@ -381,6 +389,7 @@ class Flight(Trait):
             name="Flight",
             description=f"To attack this {Icons.animal}, a Predator must have less traits than this {Icons.animal}.",
             trait_classes=[TraitClass.protective],
+            is_hard_protection = True,
         )
 
 
@@ -445,6 +454,7 @@ class Patronage(Trait):
             description=f"An {Icons.animal} without traits that is directly to the left or right of this {Icons.animal} may not be attacked by a Predator.",
             trait_classes=[TraitClass.protective],
             is_dlc=True,
+            is_hard_protection = True,
         )
 
 
