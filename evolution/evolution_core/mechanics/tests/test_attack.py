@@ -5,8 +5,8 @@ from evolution.evolution_core.mechanics.attack import (
     attack_result, _valid_hard_protection, get_left_animal, get_right_animal, 
     _resolve_partnership, _patronage_found_and_valid)
 from evolution.evolution_core.cards.traits import (
-    Carnivorous, Swimming, Camouflage, Carnivorous, Intellect, 
-    SharpVision, Burrowing, Transparent, Partnership, Patronage)
+    Carnivorous, Swimming, Camouflage, Intellect, SharpVision, 
+    Burrowing, Transparent, Partnership, Patronage)
 
 def test_swimmer_cant_attack_land_prey():
     att_player = Player()
