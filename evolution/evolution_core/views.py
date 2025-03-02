@@ -7,7 +7,7 @@ import logging
 
 from evolution.evolution_core.mechanics.setup import setup_game
 from evolution.evolution_core.mechanics.moves import resolve_development_move, resolve_feeding_move
-from evolution.evolution_core.models import Game, Player
+from evolution.evolution_core.models import Game, Player, GameAction
 from evolution.evolution_core.mechanics.phases import Phase
 from evolution.evolution_core.serializers import GameSerializer, DevelopmentMoveSerializer, FeedingMoveSerializer
 
@@ -94,23 +94,42 @@ class PlayViewSet(viewsets.ViewSet):
         if request.user != game.current_epoch.current_player.user:
             logger.error(f"Not {request.user}'s turn in game {game.id}")
             return Response({"error": "Not your turn"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        previous_action = GameAction.objects.filter(epoch=game.current_epoch, player=game.current_epoch.current_player).order_by("-action_number").first()
+        if not previous_action:
+            previous_action_number = -1
+        else:
+            previous_action_number = previous_action.action_number
 
         if game.current_epoch.current_phase == Phase.DEVELOPMENT.value:
             move_serializer = DevelopmentMoveSerializer(data=request.data)
             if move_serializer.is_valid():
                 move = move_serializer.validated_data
-                game = resolve_development_move(move, game)
+                game = resolve_development_move(move, game, user=request.user)
+                GameAction.objects.create(
+                    epoch=game.current_epoch,
+                    player=game.current_epoch.current_player,
+                    actions=[move],
+                    action_number=previous_action_number + 1
+                )
                 
         elif game.current_epoch.current_phase == Phase.FEEDING.value:
             move_serializer = FeedingMoveSerializer(data=request.data)
             if move_serializer.is_valid():
                 move = move_serializer.validated_data
-                game = resolve_feeding_move(move, game)
-
+                game = resolve_feeding_move(move, game, user=request.user)
+                GameAction.objects.create(
+                    epoch=game.current_epoch,
+                    player=game.current_epoch.current_player,
+                    actions=[move],
+                    action_number=previous_action_number + 1
+                )
         else:
             logger.error(f"Invalid move in game {game.id}. Move: {request.data}")
             return Response({"error": "Invalid move. Please check your move and try again."}, status=status.HTTP_400_BAD_REQUEST)
         
+        # Check if every player has passed, which means the epoch is over and its time to advance to the next epoch
+
         game.save()
 
         return Response(GameSerializer(game).data)

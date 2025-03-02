@@ -78,11 +78,6 @@ class GameAction(models.Model):
     class Meta:
         ordering = ["-action_number"]
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.game.last_action = self
-        self.game.save()
-
 
 class Epoch(models.Model):
     id = models.CharField(

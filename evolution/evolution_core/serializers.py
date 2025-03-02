@@ -18,6 +18,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     def get_hand_count(self, obj):
         return len(obj.hand)
+    
 
 
 class PlayerDetailSerializer(serializers.ModelSerializer):
@@ -51,16 +52,15 @@ class GameSerializer(serializers.ModelSerializer):
         return False
 
 class DevelopmentMoveSerializer(serializers.Serializer):
-    move_type = serializers.ChoiceField(choices=['new_animal', 'add_trait'])
+    move_type = serializers.ChoiceField(choices=['new_animal', 'add_trait', 'pass'])
     card_index = serializers.IntegerField()  # Index of card in player's hand to use
+    player_id = serializers.IntegerField(required=False)  # ID of player to target
     target_animal = serializers.CharField(required=False)  # Required for add_trait, ID of animal to add trait to
-    player_pass = serializers.BooleanField(default=False)  # If true, player passes their turn
     
 class FeedingMoveSerializer(serializers.Serializer):
-    move_type = serializers.ChoiceField(choices=['feed', 'eat', 'shelter'])
+    move_type = serializers.ChoiceField(choices=['feed', 'eat', 'shelter', 'pass'])
     target_area = serializers.IntegerField(required=False)  # Index of area to target
     target_animal = serializers.CharField(required=False)  # Required for eat, ID of animal to eat
-    player_pass = serializers.BooleanField(default=False)  # If true, player passes their turn
     ignore_traits = serializers.ListField(
         child=serializers.CharField(),
         required=False,

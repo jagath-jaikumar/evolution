@@ -2,7 +2,9 @@ from evolution.evolution_core.cards.traits import (
     Trait, FatTissue, Metamorphosis, Piracy, 
     Homeothermy, EcosystemEngineer, Detritivore)
 import uuid
+from dataclasses import dataclass
 
+@dataclass
 class Animal:
     def __init__(self):
         self.id = str(uuid.uuid4())[:8]
@@ -10,7 +12,7 @@ class Animal:
         self.is_sheltered = False
         self.traits = []
         self.food = 0
-        self.food_req = 1
+        self.food_requirement = 1
         self.fat = 0
         self.fat_cap = 0
         self.score = 3
@@ -18,7 +20,7 @@ class Animal:
     
     def add_trait(self, trait_to_add: Trait): # if using TraitCard and position, utilize 'card.traits[position]'
         self.traits.append(trait_to_add)
-        self.food_req += trait_to_add.food_requirement
+        self.food_requirement += trait_to_add.food_requirement
         self.score += 1 + trait_to_add.food_requirement
         if isinstance(trait_to_add, FatTissue):
             self.fat_cap += 1
@@ -27,7 +29,7 @@ class Animal:
         return self
     
     def remove_trait(self, trait_to_remove: Trait):
-        self.food_req -= trait_to_remove.food_requirement
+        self.food_requirement -= trait_to_remove.food_requirement
         self.score -= 1 + trait_to_remove.food_requirement
         if isinstance(trait_to_remove, FatTissue):
             self.fat_cap -= 1
@@ -45,7 +47,7 @@ class Animal:
         return self
     
     def gain_food(self):
-        if (self.food + self.fat >= self.food_req + self.fat_cap):
+        if (self.food + self.fat >= self.food_requirement + self.fat_cap):
             raise ValueError("Cannot take food tokens: already full with " + str(self.food) + " food/fat.")
         self.food += 1
         return self
@@ -57,7 +59,7 @@ class Animal:
         return self
 
     def successful_hunt(self):
-        if (self.food + self.fat >= self.food_req + self.fat_cap):
+        if (self.food + self.fat >= self.food_requirement + self.fat_cap):
             raise ValueError("Cannot eat another animal: already full with " + str(self.food) + " food/fat.")
         self.food += 2
         return self
@@ -133,16 +135,16 @@ class Animal:
         self.gain_food()
     
     def does_starve(self):
-        return (self.food_req - self.food > 0)
+        return (self.food_requirement - self.food > 0)
 
     def reset_for_next_epoch(self):
         self.available_bonus_action = [trait for trait in self.traits if trait.is_bonus_action]
         self.is_sheltered = False
 
-        if (self.food + self.fat - self.food_req >= self.fat_cap):
+        if (self.food + self.fat - self.food_requirement >= self.fat_cap):
             self.food = self.fat_cap
-        elif (0 < self.food + self.fat - self.food_req < self.fat_cap):
-            self.food = self.food + self.fat - self.food_req
+        elif (0 < self.food + self.fat - self.food_requirement < self.fat_cap):
+            self.food = self.food + self.fat - self.food_requirement
         else:
             self.food = 0
 
