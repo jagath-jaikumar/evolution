@@ -18,7 +18,6 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     def get_hand_count(self, obj):
         return len(obj.hand)
-    
 
 
 class PlayerDetailSerializer(serializers.ModelSerializer):
@@ -51,18 +50,16 @@ class GameSerializer(serializers.ModelSerializer):
             return obj.created_by == request.user
         return False
 
+
 class DevelopmentMoveSerializer(serializers.Serializer):
-    move_type = serializers.ChoiceField(choices=['new_animal', 'add_trait', 'pass'])
+    move_type = serializers.ChoiceField(choices=["new_animal", "add_trait", "pass"])
     card_index = serializers.IntegerField()  # Index of card in player's hand to use
     player_id = serializers.IntegerField(required=False)  # ID of player to target
     target_animal = serializers.CharField(required=False)  # Required for add_trait, ID of animal to add trait to
-    
+
+
 class FeedingMoveSerializer(serializers.Serializer):
-    move_type = serializers.ChoiceField(choices=['feed', 'eat', 'shelter', 'pass'])
+    move_type = serializers.ChoiceField(choices=["feed", "eat", "shelter", "pass"])
     target_area = serializers.IntegerField(required=False)  # Index of area to target
     target_animal = serializers.CharField(required=False)  # Required for eat, ID of animal to eat
-    ignore_traits = serializers.ListField(
-        child=serializers.CharField(),
-        required=False,
-        default=list
-    )
+    ignore_traits = serializers.ListField(child=serializers.CharField(), required=False, default=list)

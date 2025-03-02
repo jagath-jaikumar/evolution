@@ -10,6 +10,7 @@ from evolution.evolution_core.models import Game, Player
 
 logger = logging.getLogger(__name__)
 
+
 class GameViewSetTests(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -150,7 +151,6 @@ class PlayViewSetTests(TestCase):
         self.user1 = User.objects.create_user(username="testuser1", password="12345")
         self.user2 = User.objects.create_user(username="testuser2", password="12345")
 
-
     def _setup_game(self):
         game = Game.objects.create(created_by=self.user1, game_started=True)
         player1 = Player.objects.create(user=self.user1, game=game)
@@ -182,7 +182,9 @@ class PlayViewSetTests(TestCase):
         else:
             self.client.force_authenticate(user=self.user2)
 
-        response = self.client.post(f"/api/play/{game.id}/make_move/", data={"move_type": "new_animal", "card_index": 0})
+        self.client.post(
+            f"/api/play/{game.id}/make_move/", data={"move_type": "new_animal", "card_index": 0}
+        )
 
         assert len(game.players.filter(user=first_user).first().animals) == 1
         assert len(game.players.filter(user=first_user).first().hand) == 5
@@ -192,7 +194,9 @@ class PlayViewSetTests(TestCase):
         else:
             self.client.force_authenticate(user=self.user1)
 
-        response = self.client.post(f"/api/play/{game.id}/make_move/", data={"move_type": "new_animal", "card_index": 0})
+        self.client.post(
+            f"/api/play/{game.id}/make_move/", data={"move_type": "new_animal", "card_index": 0}
+        )
 
         assert len(game.players.filter(user=second_user).first().animals) == 1
         assert len(game.players.filter(user=second_user).first().hand) == 5
@@ -202,15 +206,13 @@ class PlayViewSetTests(TestCase):
         else:
             self.client.force_authenticate(user=self.user2)
 
-        response = self.client.post(f"/api/play/{game.id}/make_move/", data={"move_type": "pass"})
+        self.client.post(f"/api/play/{game.id}/make_move/", data={"move_type": "pass"})
 
         if first_user.username == self.user1.username:
             self.client.force_authenticate(user=self.user2)
         else:
             self.client.force_authenticate(user=self.user1)
 
-        response = self.client.post(f"/api/play/{game.id}/make_move/", data={"move_type": "pass"})
+        self.client.post(f"/api/play/{game.id}/make_move/", data={"move_type": "pass"})
 
         assert game.current_epoch.current_phase == Phase.FEEDING.value
-        
-        

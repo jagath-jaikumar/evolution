@@ -12,6 +12,8 @@ from evolution.evolution_core.mechanics.phases import Phase
 from evolution.evolution_core.serializers import GameSerializer, DevelopmentMoveSerializer, FeedingMoveSerializer
 
 logger = logging.getLogger(__name__)
+
+
 class GameViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = GameSerializer
@@ -94,8 +96,12 @@ class PlayViewSet(viewsets.ViewSet):
         if request.user != game.current_epoch.current_player.user:
             logger.error(f"Not {request.user}'s turn in game {game.id}")
             return Response({"error": "Not your turn"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        previous_action = GameAction.objects.filter(epoch=game.current_epoch, player=game.current_epoch.current_player).order_by("-action_number").first()
+
+        previous_action = (
+            GameAction.objects.filter(epoch=game.current_epoch, player=game.current_epoch.current_player)
+            .order_by("-action_number")
+            .first()
+        )
         if not previous_action:
             previous_action_number = -1
         else:
@@ -110,9 +116,9 @@ class PlayViewSet(viewsets.ViewSet):
                     epoch=game.current_epoch,
                     player=game.current_epoch.current_player,
                     actions=[move],
-                    action_number=previous_action_number + 1
+                    action_number=previous_action_number + 1,
                 )
-                
+
         elif game.current_epoch.current_phase == Phase.FEEDING.value:
             move_serializer = FeedingMoveSerializer(data=request.data)
             if move_serializer.is_valid():
@@ -122,17 +128,20 @@ class PlayViewSet(viewsets.ViewSet):
                     epoch=game.current_epoch,
                     player=game.current_epoch.current_player,
                     actions=[move],
-                    action_number=previous_action_number + 1
+                    action_number=previous_action_number + 1,
                 )
         else:
             logger.error(f"Invalid move in game {game.id}. Move: {request.data}")
-            return Response({"error": "Invalid move. Please check your move and try again."}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"error": "Invalid move. Please check your move and try again."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
         # Check if every player has passed, which means the epoch is over and its time to advance to the next epoch
 
         game.save()
 
         return Response(GameSerializer(game).data)
+
 
 router = routers.DefaultRouter()
 router.register(r"game", GameViewSet, basename="game")
